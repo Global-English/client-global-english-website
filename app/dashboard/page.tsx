@@ -164,7 +164,7 @@ export default function Page() {
 
       <div className="flex flex-1 flex-col gap-6 p-6">
         {!isFirebaseReady ? (
-          <div className="rounded-2xl border border-dashed bg-muted/40 p-4 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
             Firebase não configurado. Mostrando dados de demonstração.
           </div>
         ) : null}
@@ -247,7 +247,7 @@ export default function Page() {
                               "Plano de estudos com foco em conversação."}
                           </p>
                         </div>
-                        <span className="rounded-full bg-muted px-3 py-1 text-xs">
+                        <span className="rounded-full bg-accent/60 px-3 py-1 text-xs">
                           {course.enrollment.progress}% concluído
                         </span>
                       </div>

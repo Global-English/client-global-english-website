@@ -46,7 +46,7 @@ export default function Page() {
 
       <div className="flex flex-col gap-6 p-6">
         {!isFirebaseReady ? (
-          <div className="rounded-2xl border border-dashed bg-muted/40 p-4 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
             Firebase não configurado. Alterações serão apenas locais.
           </div>
         ) : null}
@@ -163,3 +163,4 @@ export default function Page() {
     </div>
   )
 }
+

@@ -48,7 +48,7 @@ export default function Page() {
 
       <div className="flex flex-col gap-6 p-6">
         {!isFirebaseReady ? (
-          <div className="rounded-2xl border border-dashed bg-muted/40 p-4 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
             Firebase não configurado. Exibindo catálogo de demonstração.
           </div>
         ) : null}
@@ -101,7 +101,7 @@ export default function Page() {
               (item) => (
                 <div
                   key={item}
-                  className="flex items-center gap-3 rounded-2xl border bg-muted/30 p-4"
+                  className="flex items-center gap-3 rounded-2xl border bg-accent/30 p-4"
                 >
                   <GraduationCap className="size-5 text-muted-foreground" />
                   <div>

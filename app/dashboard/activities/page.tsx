@@ -45,7 +45,7 @@ export default function Page() {
 
       <div className="flex flex-col gap-6 p-6">
         {!isFirebaseReady ? (
-          <div className="rounded-2xl border border-dashed bg-muted/40 p-4 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
             Firebase não configurado. Exibindo atividades de demonstração.
           </div>
         ) : null}
@@ -60,7 +60,7 @@ export default function Page() {
               <CardContent className="flex flex-col gap-4">
                 <div className="flex items-center justify-between text-sm">
                   <span>{activity.status}</span>
-                  <span className="rounded-full bg-muted px-3 py-1 text-xs">
+                  <span className="rounded-full bg-accent/60 px-3 py-1 text-xs">
                     {activity.due}
                   </span>
                 </div>
