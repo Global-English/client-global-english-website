@@ -97,7 +97,7 @@ export function LoginForm({
                   {isSubmitting ? "Entrando..." : "Entrar"}
                 </Button>
                 <FieldDescription className="text-center">
-                  Ainda não tem conta? <Link href="/signup">Criar conta</Link>
+                  Acesso restrito a contas autorizadas.
                 </FieldDescription>
                 {error ? (
                   <FieldDescription className="text-center text-destructive">

@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { Globe2 } from "lucide-react"
 
 import { LoginForm } from "@/components/login-form"
@@ -28,10 +27,7 @@ export default function LoginPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <span>Precisa de uma conta?</span>
-            <Link className="text-foreground underline-offset-4 hover:underline" href="/signup">
-              Criar conta
-            </Link>
+            <span>Acesso por convite.</span>
           </div>
         </div>
         <div className="flex items-center justify-center">

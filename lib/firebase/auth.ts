@@ -1,4 +1,4 @@
-import {
+﻿import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -6,21 +6,24 @@ import {
 } from "firebase/auth"
 import { auth, hasFirebaseConfig } from "@/lib/firebase/client"
 import { ensureUserProfile } from "@/lib/firebase/firestore"
+import { resolveUserRole } from "@/lib/firebase/roles"
 
-function assertFirebaseReady() {
+function getAuthOrThrow() {
   if (!hasFirebaseConfig || !auth) {
     throw new Error("Firebase não configurado.")
   }
+
+  return auth
 }
 
 export async function signInWithEmail(params: {
   email: string
   password: string
 }) {
-  assertFirebaseReady()
+  const firebaseAuth = getAuthOrThrow()
 
   const credential = await signInWithEmailAndPassword(
-    auth,
+    firebaseAuth,
     params.email,
     params.password
   )
@@ -29,6 +32,9 @@ export async function signInWithEmail(params: {
     uid: credential.user.uid,
     name: credential.user.displayName ?? "",
     email: credential.user.email ?? params.email,
+    role: resolveUserRole({
+      email: credential.user.email ?? params.email,
+    }),
   })
 
   return credential.user
@@ -39,10 +45,10 @@ export async function signUpWithEmail(params: {
   email: string
   password: string
 }) {
-  assertFirebaseReady()
+  const firebaseAuth = getAuthOrThrow()
 
   const credential = await createUserWithEmailAndPassword(
-    auth,
+    firebaseAuth,
     params.email,
     params.password
   )
@@ -55,6 +61,7 @@ export async function signUpWithEmail(params: {
     uid: credential.user.uid,
     name: params.name,
     email: params.email,
+    role: resolveUserRole({ email: params.email }),
   })
 
   return credential.user

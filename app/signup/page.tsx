@@ -22,12 +22,12 @@ export default function SignupPage() {
               Crie sua base de estudos com trilhas personalizadas.
             </h1>
             <p className="text-base text-muted-foreground">
-              Organize cursos, tarefas e materiais de forma clara para você e
-              seu time. Tudo conectado em um só lugar.
+              Organize cursos, tarefas e materiais de forma clara para vocÃª e
+              seu time. Tudo conectado em um sÃ³ lugar.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <span>Já tem conta?</span>
+            <span>JÃ¡ tem conta?</span>
             <Link className="text-foreground underline-offset-4 hover:underline" href="/login">
               Entrar
             </Link>
@@ -35,11 +35,10 @@ export default function SignupPage() {
         </div>
         <div className="flex items-center justify-center">
           <div className="w-full max-w-md">
-            <SignupForm />
+            <SignupForm isDisabled />
           </div>
         </div>
       </div>
     </div>
   )
 }
-

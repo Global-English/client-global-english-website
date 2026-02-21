@@ -19,14 +19,11 @@ export default function Home() {
             Global English
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <Link className="text-muted-foreground hover:text-foreground" href="/login">
-              Entrar
-            </Link>
             <Link
               className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-primary-foreground"
-              href="/signup"
+              href="/login"
             >
-              Criar conta <ArrowRight className="size-4" />
+              Entrar <ArrowRight className="size-4" />
             </Link>
           </div>
         </header>
@@ -49,15 +46,9 @@ export default function Home() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-primary-foreground"
-                  href="/signup"
-                >
-                  Começar agora <ArrowRight className="size-4" />
-                </Link>
-                <Link
-                  className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
                   href="/login"
                 >
-                  Já tenho conta
+                  Entrar <ArrowRight className="size-4" />
                 </Link>
               </div>
             </div>
@@ -129,4 +120,6 @@ export default function Home() {
     </div>
   )
 }
+
+
 

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Mail, UserCheck, UserPlus, Users2 } from "lucide-react"
+import { Mail, UserCheck, Users2 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
 import { useAuth } from "@/hooks/use-auth"

@@ -1,4 +1,4 @@
-import {
+﻿import {
   collection,
   doc,
   getDoc,
@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore"
 import { db, hasFirebaseConfig } from "@/lib/firebase/client"
 import { COLLECTIONS } from "@/lib/firebase/collections"
+import { resolveUserRole } from "@/lib/firebase/roles"
 import type {
   Activity,
   Course,
@@ -20,10 +21,12 @@ import type {
   UserRole,
 } from "@/lib/firebase/types"
 
-function assertFirestoreReady() {
+function getDbOrThrow() {
   if (!hasFirebaseConfig || !db) {
     throw new Error("Firestore não configurado.")
   }
+
+  return db
 }
 
 export async function ensureUserProfile(params: {
@@ -32,27 +35,39 @@ export async function ensureUserProfile(params: {
   email: string
   role?: UserRole
 }) {
-  assertFirestoreReady()
+  const firestore = getDbOrThrow()
 
-  const userRef = doc(db, COLLECTIONS.users, params.uid)
+  const userRef = doc(firestore, COLLECTIONS.users, params.uid)
   const snapshot = await getDoc(userRef)
 
-  if (!snapshot.exists()) {
-    await setDoc(userRef, {
+  const existingRole = snapshot.exists()
+    ? ((snapshot.data().role ?? "user") as UserRole)
+    : null
+  const resolvedRole = resolveUserRole({
+    email: params.email,
+    existingRole: params.role ?? existingRole,
+  })
+
+  await setDoc(
+    userRef,
+    {
       uid: params.uid,
       name: params.name,
       email: params.email,
-      role: params.role ?? "user",
-      createdAt: serverTimestamp(),
+      role: resolvedRole,
+      createdAt: snapshot.exists()
+        ? snapshot.data().createdAt ?? serverTimestamp()
+        : serverTimestamp(),
       updatedAt: serverTimestamp(),
-    })
-  }
+    },
+    { merge: true }
+  )
 }
 
 export async function fetchUserProfile(uid: string) {
-  assertFirestoreReady()
+  const firestore = getDbOrThrow()
 
-  const userRef = doc(db, COLLECTIONS.users, uid)
+  const userRef = doc(firestore, COLLECTIONS.users, uid)
   const snapshot = await getDoc(userRef)
 
   if (!snapshot.exists()) {
@@ -72,10 +87,10 @@ export async function fetchUserProfile(uid: string) {
 }
 
 export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]> {
-  assertFirestoreReady()
+  const firestore = getDbOrThrow()
 
   const enrollmentQuery = query(
-    collection(db, COLLECTIONS.enrollments),
+    collection(firestore, COLLECTIONS.enrollments),
     where("userId", "==", uid)
   )
 
@@ -97,8 +112,8 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
 
   const courseIds = enrollments.map((enrollment) => enrollment.courseId)
   const courses = await Promise.all(
-    courseIds.map(async (courseId) => {
-      const courseSnap = await getDoc(doc(db, COLLECTIONS.courses, courseId))
+    courseIds.map(async (courseId): Promise<Course | null> => {
+      const courseSnap = await getDoc(doc(firestore, COLLECTIONS.courses, courseId))
       if (!courseSnap.exists()) {
         return null
       }
@@ -115,7 +130,7 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
   )
 
   const tracksQuery = query(
-    collection(db, COLLECTIONS.tracks),
+    collection(firestore, COLLECTIONS.tracks),
     where("courseId", "in", courseIds)
   )
   const trackSnapshots = await getDocs(tracksQuery)
@@ -131,7 +146,7 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
   })
 
   const activitiesQuery = query(
-    collection(db, COLLECTIONS.activities),
+    collection(firestore, COLLECTIONS.activities),
     where("courseId", "in", courseIds)
   )
   const activitySnapshots = await getDocs(activitiesQuery)
@@ -148,8 +163,8 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
     }
   })
 
-  return enrollments
-    .map((enrollment) => {
+  const dashboardCourses = enrollments.map(
+    (enrollment): DashboardCourse | null => {
       const course = courses.find((item) => item?.id === enrollment.courseId)
       if (!course) {
         return null
@@ -166,7 +181,12 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
         enrollment,
         tracks: courseTracks,
         activities: courseActivities,
-      }
-    })
-    .filter((item): item is DashboardCourse => Boolean(item))
+      } satisfies DashboardCourse
+    }
+  )
+
+  return dashboardCourses.filter(
+    (item): item is DashboardCourse => item !== null
+  )
 }
+

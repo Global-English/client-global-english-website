@@ -24,8 +24,9 @@ import { Input } from "@/components/ui/input"
 
 export function SignupForm({
   className,
+  isDisabled = false,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { isDisabled?: boolean }) {
   const router = useRouter()
   const { isFirebaseReady } = useAuth()
   const [name, setName] = React.useState("")
@@ -38,6 +39,11 @@ export function SignupForm({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
+
+    if (isDisabled) {
+      setError("Cadastro temporariamente desativado.")
+      return
+    }
 
     if (password.length < 8) {
       setError("A senha precisa ter pelo menos 8 caracteres.")
@@ -87,6 +93,7 @@ export function SignupForm({
                   required
                   value={name}
                   onChange={(event) => setName(event.target.value)}
+                  disabled={isDisabled}
                 />
               </Field>
               <Field>
@@ -98,6 +105,7 @@ export function SignupForm({
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+                  disabled={isDisabled}
                 />
               </Field>
               <Field>
@@ -110,6 +118,7 @@ export function SignupForm({
                       required
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
+                      disabled={isDisabled}
                     />
                   </Field>
                   <Field>
@@ -122,6 +131,7 @@ export function SignupForm({
                       required
                       value={confirmPassword}
                       onChange={(event) => setConfirmPassword(event.target.value)}
+                      disabled={isDisabled}
                     />
                   </Field>
                 </Field>
@@ -130,7 +140,7 @@ export function SignupForm({
                 </FieldDescription>
               </Field>
               <Field>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting || isDisabled}>
                   {isSubmitting ? "Criando..." : "Criar conta"}
                 </Button>
                 <FieldDescription className="text-center">
