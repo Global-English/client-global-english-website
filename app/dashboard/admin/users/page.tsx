@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import { Mail, UserCheck, Users2 } from "lucide-react"
@@ -9,33 +9,88 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  fetchAdminUsers,
+  updateAdminUser,
+} from "@/lib/firebase/firestore"
+import type { AdminUserSummary } from "@/lib/firebase/types"
 
-const demoUsers = [
-  {
-    id: "user-1",
-    name: "Camila Souza",
-    email: "camila@globalenglish.com",
-    role: "Aluno",
-    status: "Ativo",
-  },
-  {
-    id: "user-2",
-    name: "Rafael Lima",
-    email: "rafael@globalenglish.com",
-    role: "Instrutor",
-    status: "Ativo",
-  },
-  {
-    id: "user-3",
-    name: "Marina Torres",
-    email: "marina@globalenglish.com",
-    role: "Admin",
-    status: "Ativo",
-  },
-]
+const ROLE_LABELS = {
+  admin: "Admin",
+  user: "Aluno",
+}
+
+type EditableUser = {
+  uid: string
+  name: string
+  email: string
+  role: "admin" | "user"
+  team: string
+}
+
+const selectClassName =
+  "bg-card text-foreground border-input h-9 w-full min-w-0 rounded-md border px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
 
 export default function Page() {
   const { role, isFirebaseReady } = useAuth()
+  const [users, setUsers] = React.useState<AdminUserSummary[]>([])
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+  const [selectedUser, setSelectedUser] = React.useState<EditableUser | null>(
+    null
+  )
+  const [form, setForm] = React.useState<EditableUser>({
+    uid: "",
+    name: "",
+    email: "",
+    role: "user",
+    team: "",
+  })
+  const [saving, setSaving] = React.useState(false)
+  const [formError, setFormError] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    if (!isFirebaseReady || role !== "admin") {
+      return
+    }
+
+    let isMounted = true
+
+    const loadUsers = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await fetchAdminUsers()
+        if (isMounted) {
+          setUsers(data)
+        }
+      } catch {
+        if (isMounted) {
+          setError("Não foi possível carregar os usuários.")
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadUsers()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isFirebaseReady, role])
+
+  React.useEffect(() => {
+    if (selectedUser) {
+      setForm({ ...selectedUser })
+      setFormError(null)
+    } else {
+      setForm({ uid: "", name: "", email: "", role: "user", team: "" })
+      setFormError(null)
+    }
+  }, [selectedUser])
 
   if (role !== "admin") {
     return (
@@ -52,6 +107,76 @@ export default function Page() {
     )
   }
 
+  const totalUsers = users.length
+  const adminUsers = users.filter((user) => user.role === "admin").length
+  const teamOptions = Array.from(
+    new Set(
+      users
+        .map((user) => user.team)
+        .filter((team): team is string => Boolean(team && team.trim()))
+        .map((team) => team.trim())
+    )
+  ).sort((a, b) => a.localeCompare(b))
+
+  const handleEditUser = (user: AdminUserSummary) => {
+    setSelectedUser({
+      uid: user.uid,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      team: user.team ?? "",
+    })
+  }
+
+  const handleCancelEdit = () => {
+    setSelectedUser(null)
+  }
+
+  const handleSave = async () => {
+    if (!selectedUser) {
+      setFormError("Selecione um usuário para editar.")
+      return
+    }
+
+    if (!form.name.trim() || !form.email.trim()) {
+      setFormError("Nome e email são obrigatórios.")
+      return
+    }
+
+    setSaving(true)
+    setFormError(null)
+
+    try {
+      await updateAdminUser({
+        uid: selectedUser.uid,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        role: form.role,
+        team: form.team.trim() || null,
+      })
+
+      setUsers((prev) =>
+        prev.map((user) =>
+          user.uid === selectedUser.uid
+            ? {
+                ...user,
+                name: form.name.trim(),
+                email: form.email.trim(),
+                role: form.role,
+                team: form.team.trim() || null,
+              }
+            : user
+        )
+      )
+
+      setSelectedUser(null)
+    } catch {
+      setFormError("Não foi possível salvar as alterações.")
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <div>
       <DashboardHeader
@@ -63,7 +188,13 @@ export default function Page() {
       <div className="flex flex-col gap-6 p-6">
         {!isFirebaseReady ? (
           <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
-            Firebase não configurado. Exibindo usuários de demonstração.
+            Firebase não configurado. Conecte para visualizar usuários reais.
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="rounded-2xl border border-dashed border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+            {error}
           </div>
         ) : null}
 
@@ -83,42 +214,61 @@ export default function Page() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {demoUsers.map((user) => (
-              <div
-                key={user.id}
-                className="flex flex-col gap-3 rounded-2xl border p-4 md:flex-row md:items-center md:justify-between"
-              >
-                <div>
-                  <p className="text-sm font-medium">{user.name}</p>
-                  <p className="text-xs text-muted-foreground">{user.email}</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span className="rounded-full bg-muted px-3 py-1">
-                    {user.role}
-                  </span>
-                  <span className="rounded-full bg-muted px-3 py-1">
-                    {user.status}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline">
-                    Ver perfil
-                  </Button>
-                  <Button size="sm">Editar</Button>
-                </div>
+            {loading ? (
+              <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
+                Carregando usuários...
               </div>
-            ))}
+            ) : users.length === 0 ? (
+              <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
+                Nenhum usuário encontrado.
+              </div>
+            ) : (
+              users.map((user) => (
+                <div
+                  key={user.uid}
+                  className="flex flex-col gap-3 rounded-2xl border p-4 md:flex-row md:items-center md:justify-between"
+                >
+                  <div>
+                    <p className="text-sm font-medium">{user.name}</p>
+                    <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                    <span className="rounded-full bg-muted px-3 py-1">
+                      {ROLE_LABELS[user.role]}
+                    </span>
+                    <span className="rounded-full bg-muted px-3 py-1">Ativo</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline">
+                      Ver perfil
+                    </Button>
+                    <Button size="sm" onClick={() => handleEditUser(user)}>
+                      Editar
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Cadastrar novo usuário</CardTitle>
+            <CardTitle className="text-base">
+              {selectedUser ? "Editar usuário" : "Cadastrar novo usuário"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="new-user-name">Nome completo</Label>
-              <Input id="new-user-name" placeholder="Nome do usuário" />
+              <Input
+                id="new-user-name"
+                placeholder="Nome do usuário"
+                value={form.name}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, name: event.target.value }))
+                }
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="new-user-email">Email</Label>
@@ -126,31 +276,67 @@ export default function Page() {
                 id="new-user-email"
                 type="email"
                 placeholder="usuario@empresa.com"
+                value={form.email}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, email: event.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="new-user-role">Perfil</Label>
-              <Input
+              <select
                 id="new-user-role"
-                placeholder="Aluno, Instrutor, Admin"
-              />
+                className={selectClassName}
+                value={form.role}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    role: event.target.value === "admin" ? "admin" : "user",
+                  }))
+                }
+              >
+                <option value="user">Aluno</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="new-user-team">Equipe</Label>
-              <Input id="new-user-team" placeholder="Turma ou time" />
+              <Input
+                id="new-user-team"
+                placeholder="Turma ou time"
+                value={form.team}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, team: event.target.value }))
+                }
+                list="team-options"
+              />
+              <datalist id="team-options">
+                {teamOptions.map((team) => (
+                  <option key={team} value={team} />
+                ))}
+              </datalist>
             </div>
+            {formError ? (
+              <div className="md:col-span-2 text-sm text-destructive">
+                {formError}
+              </div>
+            ) : null}
             <div className="md:col-span-2 flex items-center gap-2">
-              <Button>Salvar usuário</Button>
-              <Button variant="outline">Enviar convite por email</Button>
+              <Button onClick={handleSave} disabled={!selectedUser || saving}>
+                {saving ? "Salvando..." : "Salvar usuário"}
+              </Button>
+              <Button variant="outline" onClick={handleCancelEdit}>
+                Cancelar
+              </Button>
             </div>
           </CardContent>
         </Card>
 
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { label: "Usuários ativos", value: 128, icon: Users2 },
-            { label: "Convites pendentes", value: 5, icon: Mail },
-            { label: "Admins", value: 3, icon: UserCheck },
+            { label: "Usuários ativos", value: totalUsers, icon: Users2 },
+            { label: "Convites pendentes", value: "-", icon: Mail },
+            { label: "Admins", value: adminUsers, icon: UserCheck },
           ].map((item) => (
             <Card key={item.label}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -168,27 +354,15 @@ export default function Page() {
           <CardHeader>
             <CardTitle className="text-base">Ações rápidas</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-2">
-            {[
-              "Enviar convite em massa",
-              "Exportar lista de usuários",
-              "Atualizar permissões",
-              "Gerar relatório de acesso",
-            ].map((item) => (
-              <div
-                key={item}
-                className="flex items-center justify-between rounded-2xl border p-3"
-              >
-                <span className="text-sm">{item}</span>
-                <Button size="sm" variant="ghost">
-                  Abrir
-                </Button>
-              </div>
-            ))}
+          <CardContent>
+            <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
+              Ações automáticas serão exibidas quando houver dados.
+            </div>
           </CardContent>
         </Card>
       </div>
     </div>
   )
 }
+
 

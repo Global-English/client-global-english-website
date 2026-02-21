@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import { Bell, Moon, ShieldCheck, Sun, User } from "lucide-react"
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
 export default function Page() {
-  const { user, isFirebaseReady } = useAuth()
+  const { user, profile, isFirebaseReady } = useAuth()
   const [isDark, setIsDark] = React.useState(false)
 
   React.useEffect(() => {
@@ -62,7 +62,8 @@ export default function Page() {
               <Input
                 id="name"
                 placeholder="Seu nome"
-                defaultValue={user?.displayName ?? ""}
+                defaultValue={profile?.name ?? user?.displayName ?? ""}
+                disabled
               />
             </div>
             <div className="space-y-2">
@@ -71,18 +72,8 @@ export default function Page() {
                 id="email"
                 placeholder="seu@email.com"
                 defaultValue={user?.email ?? ""}
+                disabled
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="company">Empresa</Label>
-              <Input id="company" placeholder="Global English" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="role">Cargo</Label>
-              <Input id="role" placeholder="Líder de treinamento" />
-            </div>
-            <div className="md:col-span-2">
-              <Button>Salvar alterações</Button>
             </div>
           </CardContent>
         </Card>

@@ -13,6 +13,9 @@ import { COLLECTIONS } from "@/lib/firebase/collections"
 import { resolveUserRole } from "@/lib/firebase/roles"
 import type {
   Activity,
+  AdminCourseSummary,
+  AdminOverview,
+  AdminUserSummary,
   Course,
   DashboardCourse,
   Enrollment,
@@ -81,6 +84,7 @@ export async function fetchUserProfile(uid: string) {
     name: data.name ?? "",
     email: data.email ?? "",
     role: (data.role ?? "user") as UserRole,
+    team: data.team ?? null,
     createdAt: data.createdAt?.toDate?.() ?? null,
     updatedAt: data.updatedAt?.toDate?.() ?? null,
   } satisfies UserProfile
@@ -188,5 +192,105 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
   return dashboardCourses.filter(
     (item): item is DashboardCourse => item !== null
   )
+}
+
+export async function fetchAdminUsers(): Promise<AdminUserSummary[]> {
+  const firestore = getDbOrThrow()
+  const snapshot = await getDocs(collection(firestore, COLLECTIONS.users))
+
+  return snapshot.docs
+    .map((docSnap) => {
+      const data = docSnap.data()
+      return {
+        uid: data.uid ?? docSnap.id,
+        name: data.name ?? "",
+        email: data.email ?? "",
+        role: (data.role ?? "user") as UserRole,
+        team: data.team ?? null,
+        createdAt: data.createdAt?.toDate?.() ?? null,
+        updatedAt: data.updatedAt?.toDate?.() ?? null,
+      } satisfies AdminUserSummary
+    })
+    .sort((a, b) => a.name.localeCompare(b.name))
+}
+
+export async function updateAdminUser(params: {
+  uid: string
+  name: string
+  email: string
+  role: UserRole
+  team?: string | null
+}) {
+  const firestore = getDbOrThrow()
+  const userRef = doc(firestore, COLLECTIONS.users, params.uid)
+
+  await setDoc(
+    userRef,
+    {
+      uid: params.uid,
+      name: params.name,
+      email: params.email,
+      role: params.role,
+      team: params.team ?? null,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  )
+}
+
+export async function fetchAdminCourses(): Promise<AdminCourseSummary[]> {
+  const firestore = getDbOrThrow()
+  const coursesSnapshot = await getDocs(
+    collection(firestore, COLLECTIONS.courses)
+  )
+
+  const courseBase = coursesSnapshot.docs.map((docSnap) => {
+    const data = docSnap.data()
+    return {
+      id: docSnap.id,
+      title: data.title ?? "",
+      status: data.status ?? "Ativo",
+    }
+  })
+
+  const courses = await Promise.all(
+    courseBase.map(async (course) => {
+      const tracksSnapshot = await getDocs(
+        query(
+          collection(firestore, COLLECTIONS.tracks),
+          where("courseId", "==", course.id)
+        )
+      )
+      const enrollmentsSnapshot = await getDocs(
+        query(
+          collection(firestore, COLLECTIONS.enrollments),
+          where("courseId", "==", course.id)
+        )
+      )
+
+      return {
+        id: course.id,
+        title: course.title,
+        status: course.status,
+        modulesCount: tracksSnapshot.size,
+        studentsCount: enrollmentsSnapshot.size,
+      } satisfies AdminCourseSummary
+    })
+  )
+
+  return courses.sort((a, b) => a.title.localeCompare(b.title))
+}
+
+export async function fetchAdminOverview(): Promise<AdminOverview> {
+  const firestore = getDbOrThrow()
+  const [usersSnapshot, coursesSnapshot] = await Promise.all([
+    getDocs(collection(firestore, COLLECTIONS.users)),
+    getDocs(collection(firestore, COLLECTIONS.courses)),
+  ])
+
+  return {
+    usersCount: usersSnapshot.size,
+    coursesCount: coursesSnapshot.size,
+  }
 }
 

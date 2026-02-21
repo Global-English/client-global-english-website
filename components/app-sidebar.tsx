@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import {
@@ -31,15 +31,15 @@ import {
 } from "@/components/ui/sidebar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user, role } = useAuth()
+  const { user, role, profile } = useAuth()
   const isAdmin = role === "admin"
-  const displayName = user?.displayName || "Aluno"
+  const displayName = profile?.name || user?.displayName || "Usuário"
   const email = user?.email || "Sem email"
   const avatar = user?.photoURL || ""
 
   const navMain = [
     {
-      title: "Visão geral",
+      title: "VisÃ£o geral",
       url: "/dashboard",
       icon: Command,
       isActive: true,
@@ -50,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       icon: GraduationCap,
       items: [
         { title: "Meus cursos", url: "/dashboard/courses" },
-        { title: "Catálogo", url: "/dashboard/courses" },
+        { title: "CatÃ¡logo", url: "/dashboard/courses" },
       ],
     },
     {
@@ -59,7 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       icon: FolderKanban,
       items: [
         { title: "Trilhas ativas", url: "/dashboard/tracks" },
-        { title: "Trilhas concluídas", url: "/dashboard/tracks" },
+        { title: "Trilhas concluÃ­das", url: "/dashboard/tracks" },
       ],
     },
     {
@@ -67,8 +67,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/dashboard/activities",
       icon: ClipboardCheck,
       items: [
-        { title: "Pendências", url: "/dashboard/activities" },
-        { title: "Concluídas", url: "/dashboard/activities" },
+        { title: "PendÃªncias", url: "/dashboard/activities" },
+        { title: "ConcluÃ­das", url: "/dashboard/activities" },
       ],
     },
     {
@@ -84,12 +84,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const navSecondary = [
     { title: "Suporte", url: "#", icon: LifeBuoy },
-    { title: "Configurações", url: "/dashboard/settings", icon: Settings },
+    { title: "ConfiguraÃ§Ãµes", url: "/dashboard/settings", icon: Settings },
   ]
 
   const projects = [
     { name: "Agenda de estudos", url: "/dashboard/activities", icon: ListChecks },
-    { name: "Grupos de prática", url: "/dashboard/tracks", icon: Users },
+    { name: "Grupos de prÃ¡tica", url: "/dashboard/tracks", icon: Users },
   ]
 
   if (isAdmin) {
@@ -98,7 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/dashboard/admin",
       icon: ShieldCheck,
       items: [
-        { title: "Usuários", url: "/dashboard/admin/users" },
+        { title: "UsuÃ¡rios", url: "/dashboard/admin/users" },
         { title: "Cursos", url: "/dashboard/admin/courses" },
       ],
     })
@@ -134,3 +134,4 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
+

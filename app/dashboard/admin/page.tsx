@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import { BarChart3, GraduationCap, Users2 } from "lucide-react"
@@ -7,9 +7,47 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { fetchAdminOverview } from "@/lib/firebase/firestore"
+import type { AdminOverview } from "@/lib/firebase/types"
 
 export default function Page() {
   const { role, isFirebaseReady } = useAuth()
+  const [overview, setOverview] = React.useState<AdminOverview | null>(null)
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    if (!isFirebaseReady || role !== "admin") {
+      return
+    }
+
+    let isMounted = true
+
+    const loadOverview = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await fetchAdminOverview()
+        if (isMounted) {
+          setOverview(data)
+        }
+      } catch {
+        if (isMounted) {
+          setError("Não foi possível carregar os indicadores.")
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadOverview()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isFirebaseReady, role])
 
   if (role !== "admin") {
     return (
@@ -37,7 +75,13 @@ export default function Page() {
       <div className="flex flex-col gap-6 p-6">
         {!isFirebaseReady ? (
           <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
-            Firebase não configurado. Exibindo dados de demonstração.
+            Firebase não configurado. Conecte para visualizar dados reais.
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="rounded-2xl border border-dashed border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+            {error}
           </div>
         ) : null}
 
@@ -48,8 +92,10 @@ export default function Page() {
               <Users2 className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-semibold">128</div>
-              <p className="text-xs text-muted-foreground">+12 esta semana</p>
+              <div className="text-2xl font-semibold">
+                {loading ? "..." : overview?.usersCount ?? "-"}
+              </div>
+              <p className="text-xs text-muted-foreground">Total cadastrado</p>
             </CardContent>
           </Card>
           <Card>
@@ -58,8 +104,10 @@ export default function Page() {
               <GraduationCap className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-semibold">14</div>
-              <p className="text-xs text-muted-foreground">3 lançamentos</p>
+              <div className="text-2xl font-semibold">
+                {loading ? "..." : overview?.coursesCount ?? "-"}
+              </div>
+              <p className="text-xs text-muted-foreground">Total publicado</p>
             </CardContent>
           </Card>
           <Card>
@@ -68,8 +116,8 @@ export default function Page() {
               <BarChart3 className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-semibold">82%</div>
-              <p className="text-xs text-muted-foreground">média semanal</p>
+              <div className="text-2xl font-semibold">-</div>
+              <p className="text-xs text-muted-foreground">Sem dados disponíveis</p>
             </CardContent>
           </Card>
         </div>
@@ -84,22 +132,10 @@ export default function Page() {
             </div>
             <Button variant="outline">Ver todas</Button>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              "Revisar curso: Business Writing",
-              "Validar trilha: Fluência Global",
-              "Atualizar permissões de 3 usuários",
-            ].map((item) => (
-              <div
-                key={item}
-                className="flex items-center justify-between rounded-2xl border p-3 text-sm"
-              >
-                <span>{item}</span>
-                <Button size="sm" variant="ghost">
-                  Abrir
-                </Button>
-              </div>
-            ))}
+          <CardContent>
+            <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
+              Nenhuma ação pendente no momento.
+            </div>
           </CardContent>
         </Card>
 
@@ -107,21 +143,10 @@ export default function Page() {
           <CardHeader>
             <CardTitle className="text-base">Indicadores por turma</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
-            {[
-              { label: "Turma Executiva", value: "90%" },
-              { label: "Times Globais", value: "76%" },
-              { label: "Novos colaboradores", value: "81%" },
-              { label: "Pré-embarque", value: "68%" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center justify-between rounded-2xl border p-4"
-              >
-                <span className="text-sm">{item.label}</span>
-                <span className="text-sm font-semibold">{item.value}</span>
-              </div>
-            ))}
+          <CardContent>
+            <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
+              Indicadores serão exibidos quando houver dados.
+            </div>
           </CardContent>
         </Card>
       </div>

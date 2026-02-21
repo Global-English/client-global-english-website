@@ -5,6 +5,7 @@ export type UserProfile = {
   name: string
   email: string
   role: UserRole
+  team?: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,5 +57,20 @@ export type DashboardCourse = Course & {
   enrollment: Enrollment
   tracks: Track[]
   activities: Activity[]
+}
+
+export type AdminUserSummary = UserProfile
+
+export type AdminCourseSummary = {
+  id: string
+  title: string
+  status: string
+  modulesCount: number
+  studentsCount: number
+}
+
+export type AdminOverview = {
+  usersCount: number
+  coursesCount: number
 }
 

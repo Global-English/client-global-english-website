@@ -29,6 +29,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useRouter } from "next/navigation"
 
 export function NavUser({
   user,
@@ -42,12 +43,18 @@ export function NavUser({
   role?: UserRole | null
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
   const initials = user.name
     .split(" ")
     .map((part) => part[0])
     .join("")
     .slice(0, 2)
     .toUpperCase()
+
+  async function handleSignOut() {
+    await signOutUser()
+    router.push("/login")
+  }
 
   return (
     <SidebarMenu>
@@ -108,7 +115,7 @@ export function NavUser({
               ) : null}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOutUser}>
+            <DropdownMenuItem onClick={handleSignOut}>
               <LogOut />
               Sair
             </DropdownMenuItem>

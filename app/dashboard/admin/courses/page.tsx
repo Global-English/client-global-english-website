@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import { BookOpenCheck, ClipboardList, GraduationCap } from "lucide-react"
@@ -7,33 +7,47 @@ import { DashboardHeader } from "@/components/dashboard-header"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-const demoCourses = [
-  {
-    id: "course-1",
-    title: "Inglês Corporativo Avançado",
-    modules: 6,
-    students: 42,
-    status: "Ativo",
-  },
-  {
-    id: "course-2",
-    title: "Fluência para equipes globais",
-    modules: 4,
-    students: 58,
-    status: "Ativo",
-  },
-  {
-    id: "course-3",
-    title: "Business Writing Essentials",
-    modules: 3,
-    students: 28,
-    status: "Em revisão",
-  },
-]
+import { fetchAdminCourses } from "@/lib/firebase/firestore"
+import type { AdminCourseSummary } from "@/lib/firebase/types"
 
 export default function Page() {
   const { role, isFirebaseReady } = useAuth()
+  const [courses, setCourses] = React.useState<AdminCourseSummary[]>([])
+  const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    if (!isFirebaseReady || role !== "admin") {
+      return
+    }
+
+    let isMounted = true
+
+    const loadCourses = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await fetchAdminCourses()
+        if (isMounted) {
+          setCourses(data)
+        }
+      } catch {
+        if (isMounted) {
+          setError("Não foi possível carregar os cursos.")
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadCourses()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isFirebaseReady, role])
 
   if (role !== "admin") {
     return (
@@ -61,73 +75,84 @@ export default function Page() {
       <div className="flex flex-col gap-6 p-6">
         {!isFirebaseReady ? (
           <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
-            Firebase não configurado. Exibindo cursos de demonstração.
+            Firebase não configurado. Conecte para visualizar cursos reais.
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="rounded-2xl border border-dashed border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+            {error}
           </div>
         ) : null}
 
         <div className="grid gap-4">
-          {demoCourses.map((course) => (
-            <Card key={course.id}>
-              <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <CardTitle className="text-base">{course.title}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{course.status}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="outline">
-                    Editar
-                  </Button>
-                  <Button size="sm">Abrir</Button>
-                </div>
-              </CardHeader>
-              <CardContent className="grid gap-4 md:grid-cols-3">
-                <div className="flex items-center gap-3 rounded-2xl border p-3">
-                  <GraduationCap className="size-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Alunos</p>
-                    <p className="text-sm font-semibold">{course.students}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 rounded-2xl border p-3">
-                  <ClipboardList className="size-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Módulos</p>
-                    <p className="text-sm font-semibold">{course.modules}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 rounded-2xl border p-3">
-                  <BookOpenCheck className="size-4 text-muted-foreground" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Material</p>
-                    <p className="text-sm font-semibold">Atualizado</p>
-                  </div>
-                </div>
+          {loading ? (
+            <Card>
+              <CardContent className="p-6 text-sm text-muted-foreground">
+                Carregando cursos...
               </CardContent>
             </Card>
-          ))}
+          ) : courses.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-sm text-muted-foreground">
+                Nenhum curso encontrado.
+              </CardContent>
+            </Card>
+          ) : (
+            courses.map((course) => (
+              <Card key={course.id}>
+                <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <CardTitle className="text-base">{course.title}</CardTitle>
+                    <p className="text-xs text-muted-foreground">{course.status}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline">
+                      Editar
+                    </Button>
+                    <Button size="sm">Abrir</Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-3">
+                  <div className="flex items-center gap-3 rounded-2xl border p-3">
+                    <GraduationCap className="size-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Alunos</p>
+                      <p className="text-sm font-semibold">
+                        {course.studentsCount}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl border p-3">
+                    <ClipboardList className="size-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Módulos</p>
+                      <p className="text-sm font-semibold">
+                        {course.modulesCount}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl border p-3">
+                    <BookOpenCheck className="size-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Material</p>
+                      <p className="text-sm font-semibold">Atualizado</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Checklist administrativo</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-2">
-            {[
-              "Validar conteúdo novo",
-              "Revisar feedback de alunos",
-              "Atualizar material base",
-              "Publicar calendário mensal",
-            ].map((item) => (
-              <div
-                key={item}
-                className="flex items-center justify-between rounded-2xl border p-3"
-              >
-                <span className="text-sm">{item}</span>
-                <Button size="sm" variant="ghost">
-                  Abrir
-                </Button>
-              </div>
-            ))}
+          <CardContent>
+            <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
+              Checklist será exibido quando houver dados.
+            </div>
           </CardContent>
         </Card>
       </div>
