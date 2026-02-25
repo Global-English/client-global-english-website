@@ -132,7 +132,6 @@ export default function Page() {
           <SummaryCard
             label="Em andamento"
             value={activities.length}
-            description="Acompanhe sua lista ativa"
             icon={ListChecks}
           />
         </div>

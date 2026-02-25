@@ -61,7 +61,7 @@ export default function Page() {
         ) : null}
 
         <Card>
-          <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <CardContent className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <Avatar className="size-12">
                 <AvatarImage src={user?.photoURL ?? ""} alt={displayName} />

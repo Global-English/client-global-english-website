@@ -15,7 +15,6 @@ import { SummaryCard } from "@/components/summary-card"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserDashboard } from "@/lib/firebase/firestore"
 import type { DashboardCourse } from "@/lib/firebase/types"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function Page() {
@@ -117,25 +116,21 @@ export default function Page() {
           <SummaryCard
             label="Cursos ativos"
             value={stats.courses}
-            description="Matrículas atuais"
             icon={GraduationCap}
           />
           <SummaryCard
             label="Trilhas"
             value={stats.tracks}
-            description="Módulos em andamento"
             icon={Layers}
           />
           <SummaryCard
             label="Atividades"
             value={stats.activities}
-            description="Itens liberados"
             icon={ClipboardCheck}
           />
           <SummaryCard
             label="Progresso médio"
             value={`${stats.progress}%`}
-            description="Resumo da turma"
             icon={ListChecks}
           />
         </div>
@@ -149,9 +144,6 @@ export default function Page() {
                   Acesse rapidamente seus módulos e progresso.
                 </p>
               </div>
-              <Button variant="outline" size="sm">
-                Ver catálogo
-              </Button>
             </CardHeader>
             <CardContent>
               {isLoading ? (
