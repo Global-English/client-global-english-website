@@ -1,5 +1,11 @@
 import type { AdminUserSummary } from "@/lib/firebase/types"
 
+const USERS_CACHE_TTL = 60_000
+const usersCache = new Map<
+  string,
+  { data: AdminUsersPageResponse; ts: number }
+>()
+
 export type AdminUsersPageResponse = {
   items: AdminUserSummary[]
   nextCursor: string | null
@@ -17,7 +23,15 @@ export async function fetchAdminUsersPage(params: {
   idToken: string | null
   pageSize: number
   cursor: string | null
+  force?: boolean
 }) {
+  const cacheKey = `${params.pageSize}:${params.cursor ?? "__root__"}`
+  const now = Date.now()
+  const cached = usersCache.get(cacheKey)
+  if (!params.force && cached && now - cached.ts < USERS_CACHE_TTL) {
+    return cached.data
+  }
+
   const query = new URLSearchParams({
     pageSize: String(params.pageSize),
   })
@@ -36,7 +50,9 @@ export async function fetchAdminUsersPage(params: {
     throw new Error("failed to load")
   }
 
-  return (await resp.json()) as AdminUsersPageResponse
+  const data = (await resp.json()) as AdminUsersPageResponse
+  usersCache.set(cacheKey, { data, ts: now })
+  return data
 }
 
 export async function upsertAdminUser(
@@ -56,6 +72,7 @@ export async function upsertAdminUser(
     throw new Error(payload.uid ? "failed to update" : "failed to create")
   }
 
+  usersCache.clear()
   if (!payload.uid) {
     return resp.json()
   }
@@ -77,6 +94,8 @@ export async function toggleAdminUserDisabled(
   if (!resp.ok) {
     throw new Error("freeze failed")
   }
+
+  usersCache.clear()
 }
 
 export async function deleteAdminUser(
@@ -95,4 +114,6 @@ export async function deleteAdminUser(
   if (!resp.ok) {
     throw new Error("delete failed")
   }
+
+  usersCache.clear()
 }

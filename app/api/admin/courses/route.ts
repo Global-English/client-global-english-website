@@ -87,6 +87,31 @@ export async function GET(req: NextRequest) {
             .get(),
         ])
 
+        const trackUserIds = new Set<string>()
+        tracksSnapshot.docs.forEach((trackSnap) => {
+          const trackData = trackSnap.data()
+          const ids = Array.isArray(trackData.userIds) ? trackData.userIds : []
+          ids.forEach((id: string) => {
+            if (typeof id === "string" && id.trim()) {
+              trackUserIds.add(id)
+            }
+          })
+        })
+
+        const enrollmentUserIds = new Set<string>()
+        enrollmentsSnapshot.docs.forEach((enrollmentSnap) => {
+          const enrollmentData = enrollmentSnap.data()
+          const id = enrollmentData.userId
+          if (typeof id === "string" && id.trim()) {
+            enrollmentUserIds.add(id)
+          }
+        })
+
+        const studentsCount = new Set([
+          ...trackUserIds.values(),
+          ...enrollmentUserIds.values(),
+        ]).size
+
         return {
           id: docSnap.id,
           title: (data.title as string) ?? "",
@@ -98,7 +123,7 @@ export async function GET(req: NextRequest) {
           coverUrl: (data.coverUrl as string | null) ?? null,
           status: (data.status as string) ?? "Inscrições abertas",
           modulesCount: tracksSnapshot.size,
-          studentsCount: enrollmentsSnapshot.size,
+          studentsCount,
           activitiesCount: activitiesSnapshot.size,
         }
       })

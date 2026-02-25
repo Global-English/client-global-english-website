@@ -11,6 +11,7 @@ type CreateTrackBody = {
   title?: string
   description?: string
   order?: number
+  userIds?: string[]
 }
 
 async function assertIsAdmin(req: NextRequest) {
@@ -47,6 +48,56 @@ function parseOrder(input?: number) {
   }
 
   return Math.floor(value)
+}
+
+function normalizeUserIds(input?: unknown) {
+  if (!Array.isArray(input)) {
+    return []
+  }
+
+  const cleaned = input
+    .map((value) => (typeof value === "string" ? value.trim() : ""))
+    .filter(Boolean)
+
+  return Array.from(new Set(cleaned))
+}
+
+async function assertNoUserOverlap(params: {
+  courseId: string
+  userIds: string[]
+  excludeTrackId?: string | null
+}) {
+  if (!params.userIds.length) {
+    return { ok: true }
+  }
+
+  const snapshot = await adminDb
+    .collection(COLLECTIONS.tracks)
+    .where("courseId", "==", params.courseId)
+    .get()
+
+  const selected = new Set(params.userIds)
+  const conflicts: string[] = []
+
+  snapshot.docs.forEach((docSnap) => {
+    if (params.excludeTrackId && docSnap.id === params.excludeTrackId) {
+      return
+    }
+
+    const data = docSnap.data()
+    const ids = Array.isArray(data.userIds) ? data.userIds : []
+    ids.forEach((id: string) => {
+      if (selected.has(id)) {
+        conflicts.push(id)
+      }
+    })
+  })
+
+  if (conflicts.length) {
+    return { ok: false, conflicts: Array.from(new Set(conflicts)) }
+  }
+
+  return { ok: true }
 }
 
 async function resolveNextOrder(courseId: string) {
@@ -100,6 +151,7 @@ export async function GET(req: NextRequest) {
         title: (data.title as string) ?? "",
         description: (data.description as string) ?? "",
         order: Number(data.order ?? 0),
+        userIds: Array.isArray(data.userIds) ? data.userIds : [],
       }
     })
 
@@ -132,6 +184,7 @@ export async function POST(req: NextRequest) {
   const courseId = body.courseId?.trim()
   const title = body.title?.trim() ?? ""
   const description = body.description?.trim() ?? ""
+  const userIds = normalizeUserIds(body.userIds)
 
   if (!courseId || !title || !description) {
     return NextResponse.json(
@@ -145,6 +198,21 @@ export async function POST(req: NextRequest) {
     order = await resolveNextOrder(courseId)
   }
 
+  const overlapCheck = await assertNoUserOverlap({
+    courseId,
+    userIds,
+  })
+
+  if (!overlapCheck.ok) {
+    return NextResponse.json(
+      {
+        error: "userIds already assigned in another track",
+        conflicts: overlapCheck.conflicts,
+      },
+      { status: 409 }
+    )
+  }
+
   const now = admin.firestore.FieldValue.serverTimestamp()
 
   try {
@@ -155,6 +223,7 @@ export async function POST(req: NextRequest) {
       title,
       description,
       order,
+      userIds,
       createdAt: now,
       updatedAt: now,
       createdBy: authCheck.uid,
@@ -166,6 +235,7 @@ export async function POST(req: NextRequest) {
       title,
       description,
       order,
+      userIds,
     }
 
     return NextResponse.json(result, { status: 201 })
@@ -229,6 +299,38 @@ export async function PATCH(req: NextRequest) {
       )
     }
     updates.order = order
+  }
+
+  if (body.userIds !== undefined) {
+    const userIds = normalizeUserIds(body.userIds)
+    const trackSnap = await adminDb.collection(COLLECTIONS.tracks).doc(id).get()
+    const trackData = trackSnap.data()
+    const courseId = (trackData?.courseId as string | undefined) ?? ""
+
+    if (!courseId) {
+      return NextResponse.json(
+        { error: "courseId not found for track" },
+        { status: 400 }
+      )
+    }
+
+    const overlapCheck = await assertNoUserOverlap({
+      courseId,
+      userIds,
+      excludeTrackId: id,
+    })
+
+    if (!overlapCheck.ok) {
+      return NextResponse.json(
+        {
+          error: "userIds already assigned in another track",
+          conflicts: overlapCheck.conflicts,
+        },
+        { status: 409 }
+      )
+    }
+
+    updates.userIds = userIds
   }
 
   try {

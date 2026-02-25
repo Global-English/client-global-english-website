@@ -10,7 +10,19 @@ type SaveCoursePayload = {
   status: string
 }
 
-export async function fetchAdminCourses(idToken: string | null) {
+const COURSES_CACHE_TTL = 60_000
+let coursesCache: { data: AdminCourseSummary[]; ts: number } | null = null
+
+export async function fetchAdminCourses(
+  idToken: string | null,
+  options?: { force?: boolean }
+) {
+  if (!options?.force && coursesCache) {
+    if (Date.now() - coursesCache.ts < COURSES_CACHE_TTL) {
+      return coursesCache.data
+    }
+  }
+
   const resp = await fetch("/api/admin/courses", {
     headers: {
       ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
@@ -21,7 +33,9 @@ export async function fetchAdminCourses(idToken: string | null) {
     throw new Error("failed to load")
   }
 
-  return (await resp.json()) as AdminCourseSummary[]
+  const data = (await resp.json()) as AdminCourseSummary[]
+  coursesCache = { data, ts: Date.now() }
+  return data
 }
 
 export async function saveAdminCourse(
@@ -40,4 +54,6 @@ export async function saveAdminCourse(
   if (!resp.ok) {
     throw new Error("save failed")
   }
+
+  coursesCache = null
 }

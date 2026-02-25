@@ -2,6 +2,8 @@
 
 import * as React from "react"
 
+import Link from "next/link"
+
 import { useAuth } from "@/hooks/use-auth"
 import {
   Breadcrumb,
@@ -17,17 +19,31 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 type DashboardHeaderProps = {
   title: string
   breadcrumb?: string
+  breadcrumbItems?: Array<{
+    label: string
+    href?: string
+  }>
   description?: string
   action?: React.ReactNode
 }
 
-export function DashboardHeader({
+export const DashboardHeader = React.memo(function DashboardHeader({
   title,
   breadcrumb,
+  breadcrumbItems,
   description,
   action,
 }: DashboardHeaderProps) {
   const { role } = useAuth()
+  const resolvedItems = React.useMemo(() => {
+    if (breadcrumbItems && breadcrumbItems.length) {
+      return breadcrumbItems
+    }
+    if (breadcrumb) {
+      return [{ label: breadcrumb }]
+    }
+    return []
+  }, [breadcrumb, breadcrumbItems])
 
   return (
     <div className="border-b">
@@ -41,15 +57,28 @@ export function DashboardHeader({
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Global English</BreadcrumbLink>
+                <BreadcrumbLink asChild>
+                  <Link href="/dashboard">Global English</Link>
+                </BreadcrumbLink>
               </BreadcrumbItem>
-              {breadcrumb ? (
-                <>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>{breadcrumb}</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </>
+              {resolvedItems.length ? (
+                resolvedItems.map((item, index) => {
+                  const isLast = index === resolvedItems.length - 1
+                  return (
+                    <React.Fragment key={`${item.label}-${index}`}>
+                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbItem>
+                        {isLast || !item.href ? (
+                          <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <Link href={item.href}>{item.label}</Link>
+                          </BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+                    </React.Fragment>
+                  )
+                })
               ) : (
                 <>
                   <BreadcrumbSeparator className="hidden md:block" />
@@ -74,4 +103,4 @@ export function DashboardHeader({
       </div>
     </div>
   )
-}
+})

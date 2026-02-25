@@ -254,6 +254,53 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
+    const uid = body.uid
+    const batch = adminDb.batch()
+
+    const enrollmentsSnapshot = await adminDb
+      .collection(COLLECTIONS.enrollments)
+      .where("userId", "==", uid)
+      .get()
+
+    enrollmentsSnapshot.docs.forEach((docSnap) => {
+      batch.delete(docSnap.ref)
+    })
+
+    const tracksSnapshot = await adminDb.collection(COLLECTIONS.tracks).get()
+    tracksSnapshot.docs.forEach((docSnap) => {
+      const data = docSnap.data()
+      const userIds = Array.isArray(data.userIds) ? data.userIds : []
+      if (!userIds.includes(uid)) {
+        return
+      }
+      const nextUserIds = userIds.filter((id: string) => id !== uid)
+      batch.set(docSnap.ref, { userIds: nextUserIds }, { merge: true })
+    })
+
+    const materialsSnapshot = await adminDb.collection(COLLECTIONS.materials).get()
+    materialsSnapshot.docs.forEach((docSnap) => {
+      const data = docSnap.data()
+      const userIds = Array.isArray(data.userIds) ? data.userIds : []
+      if (!userIds.includes(uid)) {
+        return
+      }
+      const nextUserIds = userIds.filter((id: string) => id !== uid)
+      batch.set(docSnap.ref, { userIds: nextUserIds }, { merge: true })
+    })
+
+    const activitiesSnapshot = await adminDb.collection(COLLECTIONS.activities).get()
+    activitiesSnapshot.docs.forEach((docSnap) => {
+      const data = docSnap.data()
+      const userIds = Array.isArray(data.userIds) ? data.userIds : []
+      if (!userIds.includes(uid)) {
+        return
+      }
+      const nextUserIds = userIds.filter((id: string) => id !== uid)
+      batch.set(docSnap.ref, { userIds: nextUserIds }, { merge: true })
+    })
+
+    await batch.commit()
+
     await adminAuth.deleteUser(body.uid)
     await adminDb.collection(COLLECTIONS.users).doc(body.uid).delete()
     return NextResponse.json({ ok: true })

@@ -1,10 +1,14 @@
 import type { Track } from "@/lib/firebase/types"
 
+const TRACKS_CACHE_TTL = 60_000
+const tracksCache = new Map<string, { data: Track[]; ts: number }>()
+
 type CreateTrackPayload = {
   courseId: string
   title: string
   description: string
   order?: number
+  userIds?: string[]
 }
 
 type UpdateTrackPayload = {
@@ -12,12 +16,21 @@ type UpdateTrackPayload = {
   title: string
   description: string
   order?: number
+  userIds?: string[]
 }
 
 export async function fetchAdminCourseTracks(
   idToken: string | null,
-  courseId: string
+  courseId: string,
+  options?: { force?: boolean }
 ) {
+  const cacheKey = courseId
+  const now = Date.now()
+  const cached = tracksCache.get(cacheKey)
+  if (!options?.force && cached && now - cached.ts < TRACKS_CACHE_TTL) {
+    return cached.data
+  }
+
   const resp = await fetch(`/api/admin/tracks?courseId=${encodeURIComponent(courseId)}`, {
     headers: {
       ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
@@ -28,7 +41,9 @@ export async function fetchAdminCourseTracks(
     throw new Error("failed to load tracks")
   }
 
-  return (await resp.json()) as Track[]
+  const data = (await resp.json()) as Track[]
+  tracksCache.set(cacheKey, { data, ts: now })
+  return data
 }
 
 export async function createAdminCourseTrack(
@@ -45,9 +60,13 @@ export async function createAdminCourseTrack(
   })
 
   if (!resp.ok) {
+    if (resp.status === 409) {
+      throw new Error("USER_CONFLICT")
+    }
     throw new Error("create failed")
   }
 
+  tracksCache.clear()
   return (await resp.json()) as Track
 }
 
@@ -65,6 +84,11 @@ export async function updateAdminCourseTrack(
   })
 
   if (!resp.ok) {
+    if (resp.status === 409) {
+      throw new Error("USER_CONFLICT")
+    }
     throw new Error("update failed")
   }
+
+  tracksCache.clear()
 }

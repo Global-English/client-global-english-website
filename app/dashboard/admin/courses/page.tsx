@@ -57,6 +57,7 @@ export default function Page() {
   })
 
   const isEditing = editingCourseId !== null
+  const breadcrumbItems = React.useMemo(() => [{ label: "Cursos" }], [])
 
   const resetForm = React.useCallback(() => {
     setForm({
@@ -71,12 +72,12 @@ export default function Page() {
     setCreateError(null)
   }, [])
 
-  const loadCourses = React.useCallback(async () => {
+  const loadCourses = React.useCallback(async (force?: boolean) => {
     try {
       setLoading(true)
       setError(null)
       const idToken = user ? await user.getIdToken() : null
-      const data = await fetchAdminCourses(idToken)
+      const data = await fetchAdminCourses(idToken, { force })
       setCourses(data)
     } catch {
       setError("Não foi possível carregar os cursos.")
@@ -193,6 +194,7 @@ export default function Page() {
     <div>
       <DashboardHeader
         title="Gerenciar cursos"
+        breadcrumbItems={breadcrumbItems}
         description="Gerencie catálogo, módulos e matrículas corporativas."
         action={
           <Button
@@ -422,7 +424,11 @@ export default function Page() {
                   placeholder="Buscar por título ou status"
                 />
               </div>
-              <Button variant="outline" onClick={() => void loadCourses()} disabled={loading}>
+              <Button
+                variant="outline"
+                onClick={() => void loadCourses(true)}
+                disabled={loading}
+              >
                 Atualizar lista
               </Button>
             </div>

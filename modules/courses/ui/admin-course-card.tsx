@@ -124,7 +124,7 @@ export function AdminCourseCard({ course, onEdit }: AdminCourseCardProps) {
                             asChild
                         >
                             <Link href={`/dashboard/admin/courses/${course.id}`}>
-                                Gerenciar
+                                Abrir
                             </Link>
                         </Button>
                     </div>

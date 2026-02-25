@@ -147,6 +147,7 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
       title: data.title ?? "",
       description: data.description ?? "",
       order: data.order ?? 0,
+      userIds: Array.isArray(data.userIds) ? data.userIds : [],
     }
   })
 
@@ -282,6 +283,31 @@ export async function fetchAdminCourses(): Promise<AdminCourseSummary[]> {
           ),
         ])
 
+      const trackUserIds = new Set<string>()
+      tracksSnapshot.docs.forEach((trackSnap) => {
+        const data = trackSnap.data()
+        const ids = Array.isArray(data.userIds) ? data.userIds : []
+        ids.forEach((id: string) => {
+          if (typeof id === "string" && id.trim()) {
+            trackUserIds.add(id)
+          }
+        })
+      })
+
+      const enrollmentUserIds = new Set<string>()
+      enrollmentsSnapshot.docs.forEach((enrollmentSnap) => {
+        const data = enrollmentSnap.data()
+        const id = data.userId
+        if (typeof id === "string" && id.trim()) {
+          enrollmentUserIds.add(id)
+        }
+      })
+
+      const studentsCount = new Set([
+        ...trackUserIds.values(),
+        ...enrollmentUserIds.values(),
+      ]).size
+
       return {
         id: course.id,
         title: course.title,
@@ -291,7 +317,7 @@ export async function fetchAdminCourses(): Promise<AdminCourseSummary[]> {
         coverUrl: course.coverUrl,
         status: course.status,
         modulesCount: tracksSnapshot.size,
-        studentsCount: enrollmentsSnapshot.size,
+        studentsCount,
         activitiesCount: activitiesSnapshot.size,
       } satisfies AdminCourseSummary
     })
@@ -312,4 +338,3 @@ export async function fetchAdminOverview(): Promise<AdminOverview> {
     coursesCount: coursesSnapshot.size,
   }
 }
-

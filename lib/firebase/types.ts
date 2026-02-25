@@ -26,6 +26,7 @@ export type Track = {
   title: string
   description: string
   order: number
+  userIds?: string[]
 }
 
 export type Activity = {
@@ -36,14 +37,24 @@ export type Activity = {
   type: "lesson" | "quiz" | "assignment" | "project"
   order: number
   estimatedMinutes: number
+  visibility?: "module" | "users" | "private"
+  userIds?: string[]
+  releaseAt?: Date | string | null
 }
 
 export type Material = {
   id: string
-  activityId: string
+  activityId?: string
+  courseId?: string
+  trackId?: string
   title: string
   type: "pdf" | "video" | "link" | "audio"
   url: string
+  visibility?: "module" | "users" | "private"
+  userIds?: string[]
+  releaseAt?: Date | string | null
+  markdown?: string
+  attachments?: { name: string; url: string }[]
 }
 
 export type Enrollment = {
@@ -79,4 +90,3 @@ export type AdminOverview = {
   usersCount: number
   coursesCount: number
 }
-
