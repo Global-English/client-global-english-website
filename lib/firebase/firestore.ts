@@ -19,6 +19,7 @@ import type {
   Course,
   DashboardCourse,
   Enrollment,
+  Material,
   Track,
   UserProfile,
   UserRole,
@@ -93,6 +94,7 @@ export async function fetchUserProfile(uid: string): Promise<UserProfile | null>
 
 export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]> {
   const firestore = getDbOrThrow()
+  const now = new Date()
 
   const enrollmentQuery = query(
     collection(firestore, COLLECTIONS.enrollments),
@@ -166,6 +168,9 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
       type: data.type ?? "lesson",
       order: data.order ?? 0,
       estimatedMinutes: data.estimatedMinutes ?? 0,
+      visibility: data.visibility ?? "module",
+      userIds: Array.isArray(data.userIds) ? data.userIds : [],
+      releaseAt: data.releaseAt?.toDate?.() ?? null,
     }
   })
 
@@ -177,9 +182,33 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
       }
       const courseTracks = tracks
         .filter((track) => track.courseId === enrollment.courseId)
+        .filter(
+          (track) =>
+            !track.userIds?.length || track.userIds?.includes(enrollment.userId)
+        )
         .sort((a, b) => a.order - b.order)
+      const availableTrackIds = new Set(courseTracks.map((track) => track.id))
       const courseActivities = activities
         .filter((activity) => activity.courseId === enrollment.courseId)
+        .filter((activity) => availableTrackIds.has(activity.trackId))
+        .filter((activity) => {
+          const visibility = activity.visibility ?? "module"
+          if (visibility === "private") {
+            return false
+          }
+          if (visibility === "users") {
+            return activity.userIds?.includes(enrollment.userId)
+          }
+          return true
+        })
+        .filter((activity) => {
+          if (!activity.releaseAt) return true
+          const releaseAt =
+            activity.releaseAt instanceof Date
+              ? activity.releaseAt
+              : new Date(activity.releaseAt)
+          return releaseAt <= now
+        })
         .sort((a, b) => a.order - b.order)
 
       return {
@@ -194,6 +223,184 @@ export async function fetchUserDashboard(uid: string): Promise<DashboardCourse[]
   return dashboardCourses.filter(
     (item): item is DashboardCourse => item !== null
   )
+}
+
+export async function fetchUserMaterials(uid: string): Promise<Material[]> {
+  const firestore = getDbOrThrow()
+  const now = new Date()
+
+  const enrollmentQuery = query(
+    collection(firestore, COLLECTIONS.enrollments),
+    where("userId", "==", uid)
+  )
+
+  const enrollmentSnapshots = await getDocs(enrollmentQuery)
+  const enrollments: Enrollment[] = enrollmentSnapshots.docs.map((docSnap) => {
+    const data = docSnap.data()
+    return {
+      id: docSnap.id,
+      userId: data.userId,
+      courseId: data.courseId,
+      status: data.status ?? "active",
+      progress: data.progress ?? 0,
+    }
+  })
+
+  if (!enrollments.length) {
+    return []
+  }
+
+  const courseIds = enrollments.map((enrollment) => enrollment.courseId)
+  const tracksQuery = query(
+    collection(firestore, COLLECTIONS.tracks),
+    where("courseId", "in", courseIds)
+  )
+  const trackSnapshots = await getDocs(tracksQuery)
+  const availableTrackIds = new Set(
+    trackSnapshots.docs
+      .map((docSnap) => {
+        const data = docSnap.data()
+        const userIds = Array.isArray(data.userIds) ? data.userIds : []
+        if (userIds.length && !userIds.includes(uid)) {
+          return null
+        }
+        return docSnap.id
+      })
+      .filter((id): id is string => Boolean(id))
+  )
+
+  const materialsQuery = query(
+    collection(firestore, COLLECTIONS.materials),
+    where("courseId", "in", courseIds)
+  )
+  const materialsSnapshot = await getDocs(materialsQuery)
+
+  return materialsSnapshot.docs
+    .map((docSnap) => {
+      const data = docSnap.data()
+      return {
+        id: docSnap.id,
+        activityId: data.activityId ?? undefined,
+        courseId: data.courseId ?? undefined,
+        trackId: data.trackId ?? undefined,
+        title: data.title ?? "",
+        type: data.type ?? undefined,
+        url: data.url ?? "",
+        visibility: data.visibility ?? "module",
+        userIds: Array.isArray(data.userIds) ? data.userIds : [],
+        releaseAt: data.releaseAt?.toDate?.() ?? null,
+        markdown: data.markdown ?? "",
+        attachments: Array.isArray(data.attachments) ? data.attachments : [],
+      } satisfies Material
+    })
+    .filter((material) =>
+      material.trackId ? availableTrackIds.has(material.trackId) : true
+    )
+    .filter((material) => {
+      const visibility = material.visibility ?? "module"
+      if (visibility === "private") return false
+      if (visibility === "users") {
+        return material.userIds?.includes(uid)
+      }
+      return true
+    })
+    .filter((material) => {
+      if (!material.releaseAt) return true
+      const releaseAt =
+        material.releaseAt instanceof Date
+          ? material.releaseAt
+          : new Date(material.releaseAt)
+      return releaseAt <= now
+    })
+    .sort((a, b) => a.title.localeCompare(b.title))
+}
+
+export async function fetchUserActivities(uid: string): Promise<Activity[]> {
+  const firestore = getDbOrThrow()
+  const now = new Date()
+
+  const enrollmentQuery = query(
+    collection(firestore, COLLECTIONS.enrollments),
+    where("userId", "==", uid)
+  )
+
+  const enrollmentSnapshots = await getDocs(enrollmentQuery)
+  const enrollments: Enrollment[] = enrollmentSnapshots.docs.map((docSnap) => {
+    const data = docSnap.data()
+    return {
+      id: docSnap.id,
+      userId: data.userId,
+      courseId: data.courseId,
+      status: data.status ?? "active",
+      progress: data.progress ?? 0,
+    }
+  })
+
+  if (!enrollments.length) {
+    return []
+  }
+
+  const courseIds = enrollments.map((enrollment) => enrollment.courseId)
+  const tracksQuery = query(
+    collection(firestore, COLLECTIONS.tracks),
+    where("courseId", "in", courseIds)
+  )
+  const trackSnapshots = await getDocs(tracksQuery)
+  const availableTrackIds = new Set(
+    trackSnapshots.docs
+      .map((docSnap) => {
+        const data = docSnap.data()
+        const userIds = Array.isArray(data.userIds) ? data.userIds : []
+        if (userIds.length && !userIds.includes(uid)) {
+          return null
+        }
+        return docSnap.id
+      })
+      .filter((id): id is string => Boolean(id))
+  )
+
+  const activitiesQuery = query(
+    collection(firestore, COLLECTIONS.activities),
+    where("courseId", "in", courseIds)
+  )
+  const activitiesSnapshot = await getDocs(activitiesQuery)
+
+  return activitiesSnapshot.docs
+    .map((docSnap) => {
+      const data = docSnap.data()
+      return {
+        id: docSnap.id,
+        courseId: data.courseId,
+        trackId: data.trackId,
+        title: data.title ?? "",
+        type: data.type ?? "lesson",
+        order: data.order ?? 0,
+        estimatedMinutes: data.estimatedMinutes ?? 0,
+        visibility: data.visibility ?? "module",
+        userIds: Array.isArray(data.userIds) ? data.userIds : [],
+        releaseAt: data.releaseAt?.toDate?.() ?? null,
+        attachments: Array.isArray(data.attachments) ? data.attachments : [],
+        questions: Array.isArray(data.questions) ? data.questions : [],
+      } satisfies Activity
+    })
+    .filter((activity) => availableTrackIds.has(activity.trackId))
+    .filter((activity) => {
+      const visibility = activity.visibility ?? "module"
+      if (visibility === "private") return false
+      if (visibility === "users") {
+        return activity.userIds?.includes(uid)
+      }
+      return true
+    })
+    .filter((activity) => {
+      if (!activity.releaseAt) return true
+      const releaseAt =
+        activity.releaseAt instanceof Date
+          ? activity.releaseAt
+          : new Date(activity.releaseAt)
+      return releaseAt <= now
+    })
+    .sort((a, b) => a.order - b.order)
 }
 
 export async function fetchAdminUsers(): Promise<AdminUserSummary[]> {

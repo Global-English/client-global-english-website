@@ -58,13 +58,13 @@ export type Material = {
   courseId?: string
   trackId?: string
   title: string
-  type: "pdf" | "video" | "link" | "audio"
-  url: string
+  type?: "pdf" | "video" | "link" | "audio"
+  url?: string
   visibility?: "module" | "users" | "private"
   userIds?: string[]
   releaseAt?: Date | string | null
   markdown?: string
-  attachments?: { name: string; url: string }[]
+  attachments?: { name: string; url: string; type?: "pdf" | "video" | "link" | "audio" }[]
 }
 
 export type Enrollment = {

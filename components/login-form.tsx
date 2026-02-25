@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import Link from "next/link"
@@ -165,9 +165,11 @@ export function LoginForm({
       </FieldDescription>
       {!isFirebaseReady ? (
         <FieldDescription className="px-6 text-center text-xs text-muted-foreground">
-          Firebase não configurado. Acesso liberado para demo.
+          Firebase não configurado. Conecte para usar autenticação real.
         </FieldDescription>
       ) : null}
     </div>
   )
 }
+
+

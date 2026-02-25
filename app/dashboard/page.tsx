@@ -1,117 +1,29 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import {
-  BookOpen,
   ClipboardCheck,
   GraduationCap,
   Layers,
   ListChecks,
-  Users,
+  Sparkles,
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
+import { SummaryCard } from "@/components/summary-card"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserDashboard } from "@/lib/firebase/firestore"
 import type { DashboardCourse } from "@/lib/firebase/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-const fallbackCourses: DashboardCourse[] = [
-  {
-    id: "demo-course-1",
-    title: "Inglês Corporativo Avançado",
-    description: "Foco em reuniões, apresentações e relatórios.",
-    level: "Advanced",
-    durationWeeks: 8,
-    coverUrl: undefined,
-    enrollment: {
-      id: "demo-enroll-1",
-      userId: "demo",
-      courseId: "demo-course-1",
-      status: "active",
-      progress: 72,
-    },
-    tracks: [
-      {
-        id: "track-1",
-        courseId: "demo-course-1",
-        title: "Comunicação estratégica",
-        description: "Pitch, storytelling e influência.",
-        order: 1,
-      },
-      {
-        id: "track-2",
-        courseId: "demo-course-1",
-        title: "Writing executivo",
-        description: "Emails, reports e memos.",
-        order: 2,
-      },
-    ],
-    activities: [
-      {
-        id: "activity-1",
-        courseId: "demo-course-1",
-        trackId: "track-1",
-        title: "Apresentação de resultados",
-        type: "project",
-        order: 1,
-        estimatedMinutes: 45,
-      },
-      {
-        id: "activity-2",
-        courseId: "demo-course-1",
-        trackId: "track-2",
-        title: "Revisão de e-mails críticos",
-        type: "assignment",
-        order: 2,
-        estimatedMinutes: 30,
-      },
-    ],
-  },
-  {
-    id: "demo-course-2",
-    title: "Fluência para equipes globais",
-    description: "Conversação e listening para contextos multiculturais.",
-    level: "Intermediate",
-    durationWeeks: 6,
-    coverUrl: undefined,
-    enrollment: {
-      id: "demo-enroll-2",
-      userId: "demo",
-      courseId: "demo-course-2",
-      status: "active",
-      progress: 38,
-    },
-    tracks: [
-      {
-        id: "track-3",
-        courseId: "demo-course-2",
-        title: "Daily syncs",
-        description: "Rotina de alinhamento rápido.",
-        order: 1,
-      },
-    ],
-    activities: [
-      {
-        id: "activity-3",
-        courseId: "demo-course-2",
-        trackId: "track-3",
-        title: "Simulação de reunião",
-        type: "lesson",
-        order: 1,
-        estimatedMinutes: 25,
-      },
-    ],
-  },
-]
-
 export default function Page() {
   const router = useRouter()
   const { user, loading, isFirebaseReady } = useAuth()
-  const [courses, setCourses] = React.useState<DashboardCourse[]>(fallbackCourses)
+  const [courses, setCourses] = React.useState<DashboardCourse[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
+  const [error, setError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     if (!loading && !user && isFirebaseReady) {
@@ -128,16 +40,17 @@ export default function Page() {
 
       setIsLoading(true)
       try {
+        setError(null)
         const data = await fetchUserDashboard(user.uid)
-        setCourses(data.length ? data : fallbackCourses)
+        setCourses(data)
       } catch {
-        setCourses(fallbackCourses)
+        setError("Não foi possível carregar seus cursos.")
       } finally {
         setIsLoading(false)
       }
     }
 
-    loadDashboard()
+    void loadDashboard()
   }, [user, isFirebaseReady])
 
   const stats = {
@@ -155,6 +68,19 @@ export default function Page() {
       : 0,
   }
 
+  const upcomingActivities = courses
+    .flatMap((course) =>
+      course.activities.map((activity) => ({
+        ...activity,
+        courseTitle: course.title,
+        trackTitle:
+          course.tracks.find((track) => track.id === activity.trackId)?.title ??
+          "",
+      }))
+    )
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 4)
+
   return (
     <div>
       <DashboardHeader
@@ -165,62 +91,50 @@ export default function Page() {
       <div className="flex flex-1 flex-col gap-6 p-6">
         {!isFirebaseReady ? (
           <div className="rounded-2xl border border-dashed bg-accent/40 p-4 text-sm text-muted-foreground">
-            Firebase não configurado. Mostrando dados de demonstração.
+            Firebase não configurado. Conecte para visualizar seus cursos reais.
           </div>
         ) : null}
 
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium">Cursos</CardTitle>
-              <GraduationCap className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold">{stats.courses}</div>
-              <p className="text-xs text-muted-foreground">Matrículas ativas</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium">Trilhas</CardTitle>
-              <Layers className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold">{stats.tracks}</div>
-              <p className="text-xs text-muted-foreground">
-                Trilhas em andamento
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium">Atividades</CardTitle>
-              <ClipboardCheck className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold">{stats.activities}</div>
-              <p className="text-xs text-muted-foreground">Itens planejados</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium">Progresso</CardTitle>
-              <ListChecks className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold">{stats.progress}%</div>
-              <p className="text-xs text-muted-foreground">Média dos cursos</p>
-            </CardContent>
-          </Card>
+        {error ? (
+          <div className="rounded-2xl border border-dashed border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+            {error}
+          </div>
+        ) : null}
+
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <SummaryCard
+            label="Cursos ativos"
+            value={stats.courses}
+            description="Matrículas atuais"
+            icon={GraduationCap}
+          />
+          <SummaryCard
+            label="Trilhas"
+            value={stats.tracks}
+            description="Módulos em andamento"
+            icon={Layers}
+          />
+          <SummaryCard
+            label="Atividades"
+            value={stats.activities}
+            description="Itens liberados"
+            icon={ClipboardCheck}
+          />
+          <SummaryCard
+            label="Progresso médio"
+            value={`${stats.progress}%`}
+            description="Resumo da turma"
+            icon={ListChecks}
+          />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <Card>
             <CardHeader className="flex items-center justify-between gap-2 sm:flex-row">
               <div>
                 <CardTitle className="text-base">Cursos ativos</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Sua visão rápida das trilhas e atividades.
+                  Acesse rapidamente seus módulos e progresso.
                 </p>
               </div>
               <Button variant="outline" size="sm">
@@ -237,9 +151,9 @@ export default function Page() {
                   {courses.map((course) => (
                     <div
                       key={course.id}
-                      className="flex flex-col gap-3 rounded-2xl border p-4"
+                      className="rounded-2xl border p-4 transition-colors hover:border-primary/40"
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <p className="text-sm font-semibold">{course.title}</p>
                           <p className="text-xs text-muted-foreground">
@@ -251,10 +165,21 @@ export default function Page() {
                           {course.enrollment.progress}% concluído
                         </span>
                       </div>
-                      <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+                      <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
                         <span>{course.level}</span>
-                        <span>{course.tracks.length} trilhas</span>
+                        <span>{course.tracks.length} módulos</span>
                         <span>{course.activities.length} atividades</span>
+                      </div>
+                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-primary"
+                          style={{
+                            width: `${Math.max(
+                              0,
+                              Math.min(100, course.enrollment.progress)
+                            )}%`,
+                          }}
+                        />
                       </div>
                     </div>
                   ))}
@@ -273,41 +198,75 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-dashed">
             <CardHeader>
-              <CardTitle className="text-base">Próximos passos</CardTitle>
+              <CardTitle className="text-base">Próximas atividades</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Itens liberados recentemente para você continuar.
+              </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start gap-3 rounded-xl border p-3">
-                <BookOpen className="mt-1 size-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Acesse a biblioteca</p>
-                  <p className="text-xs text-muted-foreground">
-                    Consulte materiais recomendados e recursos extras.
-                  </p>
+            <CardContent className="space-y-3">
+              {upcomingActivities.length ? (
+                upcomingActivities.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="rounded-2xl border bg-background p-3"
+                  >
+                    <p className="text-sm font-medium">{activity.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {activity.courseTitle}
+                      {activity.trackTitle ? ` • ${activity.trackTitle}` : ""}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed p-4 text-xs text-muted-foreground">
+                  Nenhuma atividade disponível no momento.
                 </div>
-              </div>
-              <div className="flex items-start gap-3 rounded-xl border p-3">
-                <Users className="mt-1 size-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Participe do grupo</p>
-                  <p className="text-xs text-muted-foreground">
-                    Conecte-se com colegas para práticas semanais.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 rounded-xl border p-3">
-                <ClipboardCheck className="mt-1 size-4 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Revise suas tarefas</p>
-                  <p className="text-xs text-muted-foreground">
-                    Veja o que está pendente nas atividades atuais.
-                  </p>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
+
+        {courses.length > 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Resumo de carga</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 md:grid-cols-3">
+              <SummaryCard
+                label="Cursos ativos"
+                value={courses.length}
+                icon={GraduationCap}
+              />
+              <SummaryCard
+                label="Módulos"
+                value={courses.reduce(
+                  (acc, course) => acc + course.tracks.length,
+                  0
+                )}
+                icon={Layers}
+              />
+              <SummaryCard
+                label="Progresso médio"
+                value={`${Math.round(
+                  courses.reduce(
+                    (acc, course) => acc + (course.enrollment.progress ?? 0),
+                    0
+                  ) / courses.length
+                )}%`}
+                icon={ListChecks}
+              />
+              <div className="flex items-center gap-3 rounded-2xl border p-3 md:col-span-3">
+                <Sparkles className="size-4 text-primary" />
+                <p className="text-xs text-muted-foreground">
+                  Dica: cursos com progresso acima de 70% tendem a ter maior
+                  conclusão.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </div>
   )

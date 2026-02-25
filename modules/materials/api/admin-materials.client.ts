@@ -7,13 +7,13 @@ export type CreateAdminMaterialPayload = {
   courseId: string
   trackId: string
   title: string
-  type: "pdf" | "video" | "link" | "audio"
-  url: string
+  type?: "pdf" | "video" | "link" | "audio"
+  url?: string
   visibility: "module" | "users" | "private"
   userIds?: string[]
   releaseAt?: string | null
   markdown?: string
-  attachments?: { name: string; url: string }[]
+  attachments?: { name: string; url: string; type?: "pdf" | "video" | "link" | "audio" }[]
 }
 
 export async function fetchAdminCourseMaterials(

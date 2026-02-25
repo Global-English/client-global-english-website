@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import Image from "next/image"
@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
+import { SummaryCard } from "@/components/summary-card"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -66,6 +67,23 @@ export default function Page() {
     void loadCourses()
   }, [isFirebaseReady, user, loadCourses])
 
+  const stats = {
+    courses: courses.length,
+    tracks: courses.reduce((acc, course) => acc + course.tracks.length, 0),
+    activities: courses.reduce(
+      (acc, course) => acc + course.activities.length,
+      0
+    ),
+    avgProgress: courses.length
+      ? Math.round(
+          courses.reduce(
+            (acc, course) => acc + (course.enrollment.progress ?? 0),
+            0
+          ) / courses.length
+        )
+      : 0,
+  }
+
   return (
     <div>
       <DashboardHeader
@@ -91,7 +109,22 @@ export default function Page() {
           </div>
         ) : null}
 
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <SummaryCard label="Cursos" value={stats.courses} icon={BookOpen} />
+          <SummaryCard label="Módulos" value={stats.tracks} icon={ClipboardList} />
+          <SummaryCard
+            label="Atividades"
+            value={stats.activities}
+            icon={BarChart3}
+          />
+          <SummaryCard
+            label="Progresso médio"
+            value={`${stats.avgProgress}%`}
+            icon={Sparkles}
+          />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {loading ? (
             <Card>
               <CardContent className="p-6 text-sm text-muted-foreground">
@@ -99,7 +132,7 @@ export default function Page() {
               </CardContent>
             </Card>
           ) : courses.length === 0 ? (
-            <Card>
+            <Card className="sm:col-span-2 lg:col-span-3 xl:col-span-4">
               <CardContent className="p-6 text-sm text-muted-foreground">
                 Você ainda não possui cursos ativos.
               </CardContent>
@@ -108,16 +141,15 @@ export default function Page() {
             courses.map((course) => (
               <Card
                 key={course.id}
-                className="group flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-neutral-200 dark:border-neutral-800"
+                className="group flex h-full flex-col overflow-hidden border-muted-foreground/20 transition-all hover:-translate-y-0.5 hover:shadow-md"
               >
-                {/* Course Image Header */}
-                <div className="relative aspect-video w-full overflow-hidden bg-muted/30 border-b border-neutral-100 dark:border-neutral-800">
+                <div className="relative aspect-video w-full overflow-hidden bg-muted/30">
                   {course.coverUrl ? (
                     <Image
                       src={course.coverUrl}
                       alt={course.title}
                       fill
-                      sizes="(min-width: 1536px) 16.6vw, (min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                      sizes="(min-width: 1536px) 25vw, (min-width: 1280px) 33vw, (min-width: 1024px) 50vw, 100vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
@@ -126,58 +158,56 @@ export default function Page() {
                     </div>
                   )}
 
-                  {/* Status Badge */}
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute left-3 top-3">
                     <span
                       className={cn(
-                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm",
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
                         ENROLLMENT_STATUS_STYLES[course.enrollment.status] ??
                           ENROLLMENT_STATUS_STYLES.active
                       )}
                     >
-                      {ENROLLMENT_STATUS_LABELS[course.enrollment.status] ?? "Em andamento"}
+                      {ENROLLMENT_STATUS_LABELS[course.enrollment.status] ??
+                        "Em andamento"}
                     </span>
                   </div>
 
-                  {/* Level Badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className="rounded-full bg-black/60 backdrop-blur-sm px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                  <div className="absolute right-3 top-3">
+                    <span className="rounded-full bg-black/60 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">
                       {course.level}
                     </span>
                   </div>
                 </div>
 
-                <CardContent className="flex flex-1 flex-col p-5">
-                  <div className="mb-4">
-                    <h3 className="font-bold text-lg leading-tight text-neutral-900 dark:text-neutral-100 line-clamp-2 min-h-14 group-hover:text-primary transition-colors">
+                <CardContent className="flex flex-1 flex-col gap-4 p-4">
+                  <div>
+                    <h3 className="text-base font-semibold leading-tight text-foreground line-clamp-2">
                       {course.title}
                     </h3>
-                    <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400 line-clamp-2">
-                      {course.description || "Inicie sua jornada neste treinamento exclusivo."}
+                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                      {course.description ||
+                        "Inicie sua jornada neste treinamento exclusivo."}
                     </p>
                   </div>
 
-                  <div className="space-y-4">
-                    {/* Progress Section */}
-                    <div className="space-y-2 rounded-xl border bg-neutral-50/50 dark:bg-neutral-900/50 p-3">
-                      <div className="flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2 font-medium text-neutral-500">
-                          <BarChart3 className="size-3.5" />
-                          Seu Progresso
-                        </div>
-                        <span className="font-bold text-neutral-900 dark:text-neutral-100">
-                          {course.enrollment.progress}%
-                        </span>
-                      </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800">
-                        <div
-                          className="h-full rounded-full bg-primary transition-all duration-1000 ease-out"
-                          style={{ width: `${Math.max(0, Math.min(100, course.enrollment.progress))}%` }}
-                        />
-                      </div>
+                  <div className="space-y-2 rounded-xl border bg-muted/30 p-3">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">Progresso</span>
+                      <span className="font-semibold text-foreground">
+                        {course.enrollment.progress}%
+                      </span>
                     </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-neutral-400 font-medium">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{
+                          width: `${Math.max(
+                            0,
+                            Math.min(100, course.enrollment.progress)
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                       <div className="flex items-center gap-1.5">
                         <ClipboardList className="size-3.5" />
                         {course.tracks.length} módulos
@@ -187,15 +217,15 @@ export default function Page() {
                         {course.durationWeeks} sem
                       </div>
                     </div>
+                  </div>
 
-                    <div className="mt-4 flex items-center gap-2">
-                      <Button className="flex-1 h-9 text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:shadow-md active:scale-95">
-                        Continuar
-                      </Button>
-                      <Button variant="outline" className="h-9 px-3 text-xs font-bold uppercase tracking-wider transition-all hover:bg-neutral-50 active:scale-95">
-                        Detalhes
-                      </Button>
-                    </div>
+                  <div className="mt-auto flex items-center gap-2">
+                    <Button className="flex-1" size="sm">
+                      Continuar
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Detalhes
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -209,41 +239,26 @@ export default function Page() {
               <CardTitle className="text-base">Resumo de carga</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 md:grid-cols-3">
-              <div className="flex items-center gap-3 rounded-2xl border p-3">
-                <BookOpen className="size-4 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Cursos ativos</p>
-                  <p className="text-sm font-semibold">{courses.length}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-2xl border p-3">
-                <ClipboardList className="size-4 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Módulos</p>
-                  <p className="text-sm font-semibold">
-                    {courses.reduce((acc, course) => acc + course.tracks.length, 0)}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-2xl border p-3">
-                <BarChart3 className="size-4 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Progresso médio</p>
-                  <p className="text-sm font-semibold">
-                    {Math.round(
-                      courses.reduce(
-                        (acc, course) => acc + (course.enrollment.progress ?? 0),
-                        0
-                      ) / courses.length
-                    )}
-                    %
-                  </p>
-                </div>
-              </div>
+              <SummaryCard
+                label="Cursos ativos"
+                value={courses.length}
+                icon={BookOpen}
+              />
+              <SummaryCard
+                label="Módulos"
+                value={stats.tracks}
+                icon={ClipboardList}
+              />
+              <SummaryCard
+                label="Progresso médio"
+                value={`${stats.avgProgress}%`}
+                icon={BarChart3}
+              />
               <div className="flex items-center gap-3 rounded-2xl border p-3 md:col-span-3">
                 <Sparkles className="size-4 text-primary" />
                 <p className="text-xs text-muted-foreground">
-                  Dica: cursos com progresso acima de 70% tendem a ter maior conclusão.
+                  Dica: cursos com progresso acima de 70% tendem a ter maior
+                  conclusão.
                 </p>
               </div>
             </CardContent>

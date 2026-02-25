@@ -7,13 +7,11 @@ import {
   Command,
   GraduationCap,
   LifeBuoy,
-  ListChecks,
   Settings,
   ShieldCheck,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import { useAuth } from "@/hooks/use-auth"
@@ -76,11 +74,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     { title: "Configurações", url: "/dashboard/settings", icon: Settings },
   ]
 
-  const projects = [
-    { name: "Agenda de estudos", url: "/dashboard/activities", icon: ListChecks },
-    { name: "Grupos de prática", url: "/dashboard/activities", icon: ListChecks },
-  ]
-
   if (isAdmin) {
     navMain.push({
       title: "Admin",
@@ -114,7 +107,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
-        <NavProjects projects={projects} />
         <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
@@ -123,4 +115,3 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
-

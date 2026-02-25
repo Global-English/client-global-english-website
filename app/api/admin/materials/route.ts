@@ -113,8 +113,8 @@ export async function GET(req: NextRequest) {
         courseId: data.courseId ?? undefined,
         trackId: data.trackId ?? undefined,
         title: data.title ?? "",
-        type: data.type ?? "pdf",
-        url: data.url ?? "",
+        type: data.type ?? undefined,
+        url: data.url ?? undefined,
         visibility: data.visibility ?? "private",
         userIds: Array.isArray(data.userIds) ? data.userIds : [],
         releaseAt: data.releaseAt?.toDate?.() ?? null,
@@ -164,11 +164,11 @@ export async function POST(req: NextRequest) {
     ? (type as CreateMaterialBody["type"])
     : markdown.trim()
     ? "markdown"
-    : attachments[0]?.type ?? undefined
+    : attachments[0]?.type ?? (url ? "link" : undefined)
 
-  if (!courseId || !trackId || !title || !type) {
+  if (!courseId || !trackId || !title) {
     return NextResponse.json(
-      { error: "courseId, trackId, title and type are required" },
+      { error: "courseId, trackId and title are required" },
       { status: 400 }
     )
   }
