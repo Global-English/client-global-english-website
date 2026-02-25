@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import {
   BarChart3,
   BookOpen,
@@ -112,10 +113,12 @@ export default function Page() {
                 {/* Course Image Header */}
                 <div className="relative aspect-video w-full overflow-hidden bg-muted/30 border-b border-neutral-100 dark:border-neutral-800">
                   {course.coverUrl ? (
-                    <img
+                    <Image
                       src={course.coverUrl}
                       alt={course.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      fill
+                      sizes="(min-width: 1536px) 16.6vw, (min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/20 dark:to-blue-950/20">

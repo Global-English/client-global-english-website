@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
     BookOpenCheck,
     ClipboardList,
@@ -120,8 +121,11 @@ export function AdminCourseCard({ course, onEdit }: AdminCourseCardProps) {
                         <Button
                             size="sm"
                             className="h-8 px-4 text-xs font-semibold shadow-sm"
+                            asChild
                         >
-                            Gerenciar
+                            <Link href={`/dashboard/admin/courses/${course.id}`}>
+                                Gerenciar
+                            </Link>
                         </Button>
                     </div>
                 </div>
