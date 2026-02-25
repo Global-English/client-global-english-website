@@ -59,7 +59,7 @@ export type Material = {
   courseId?: string
   trackId?: string
   title: string
-  type?: "pdf" | "video" | "link" | "audio"
+  type?: "pdf" | "video" | "link" | "audio" | "markdown"
   url?: string
   visibility?: "module" | "users" | "private"
   userIds?: string[]
