@@ -11,6 +11,31 @@ import {
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarGroup, AvatarImage } from "@/components/ui/avatar"
 import { Logo } from "@/components/ui/logo"
+import { DashboardMockup } from "@/components/landing/dashboard-mockup"
+
+// Hoisted static features array out of the render cycle
+const featuresList = [
+  {
+    icon: GraduationCap,
+    title: "Cursos Conectados",
+    description: "Trilhas completas com níveis e objetivos desenhados sob medida para o seu perfil."
+  },
+  {
+    icon: Layers,
+    title: "Passo a Passo",
+    description: "Saiba exatamente o que fazer a seguir com trilhas claras, prioridades e prazos bem definidos."
+  },
+  {
+    icon: BookOpen,
+    title: "Biblioteca Viva",
+    description: "Acesso instantâneo aos seus materiais em PDF, vídeos, áudios e links complementares."
+  },
+  {
+    icon: ShieldCheck,
+    title: "100% Seguro",
+    description: "Uma conta única, segura e exclusiva com todo o histórico do seu desempenho salvo na nuvem."
+  },
+]
 
 export default function Home() {
   return (
@@ -98,52 +123,7 @@ export default function Home() {
             </div>
 
             {/* Visual Glassmorphic Dashboard Mockup */}
-            <div className="relative mx-auto w-full max-w-[500px] lg:max-w-none perspective-[1000px]">
-              <div className="absolute -inset-1 rounded-[2rem] bg-linear-to-tr from-primary/30 to-accent/30 blur-2xl opacity-60"></div>
-              <div className="relative rounded-[2rem] border bg-background/60 backdrop-blur-xl p-8 shadow-2xl ring-1 ring-border/50 transition-transform duration-500 hover:rotate-y-[-5deg] hover:rotate-x-[5deg]">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-foreground font-medium">
-                      <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>
-                      Visão Semanal
-                    </div>
-                    <span className="text-muted-foreground text-xs bg-muted px-2 py-1 rounded-md">Hoje</span>
-                  </div>
-
-                  <div className="space-y-4">
-                    {[
-                      { title: "Conversação avançada", progress: "85%", days: "Hoje", icon: Users },
-                      { title: "Business writing", progress: "40%", days: "Em 2 dias", icon: BookOpen },
-                      { title: "Listening lab", progress: "100%", days: "Concluído", icon: CheckCircle2, done: true }
-                    ].map((item, i) => (
-                      <div
-                        key={i}
-                        className={`group flex items-center gap-4 rounded-2xl border bg-card/50 p-4 transition-all hover:bg-card hover:shadow-md hover:-translate-y-0.5 ${item.done ? 'border-green-500/20 bg-green-500/5' : ''}`}
-                      >
-                        <div className={`flex size-10 shrink-0 items-center justify-center rounded-full ${item.done ? 'bg-green-500 text-white' : 'bg-primary/10 text-primary'}`}>
-                          <item.icon className="size-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground truncate">
-                            {item.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {item.days}
-                          </p>
-                        </div>
-                        <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${item.done ? 'bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-muted text-foreground'}`}>
-                          {item.progress}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-linear-to-r from-primary to-accent w-[75%] rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <DashboardMockup />
           </section>
 
           {/* Features Section (Cognitive Ease Pattern) */}
@@ -158,45 +138,17 @@ export default function Home() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <div className="group rounded-3xl border bg-card/40 p-8 transition-all hover:-translate-y-2 hover:bg-card hover:shadow-xl hover:shadow-primary/5">
-                <div className="mb-6 inline-flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                  <GraduationCap className="size-6" />
+              {featuresList.map((feature, i) => (
+                <div key={i} className="group rounded-3xl border bg-card/40 p-8 transition-all hover:-translate-y-2 hover:bg-card hover:shadow-xl hover:shadow-primary/5">
+                  <div className="mb-6 inline-flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                    <feature.icon className="size-6" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground">{feature.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-foreground">Cursos Conectados</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  Trilhas completas com níveis e objetivos desenhados sob medida para o seu perfil.
-                </p>
-              </div>
-
-              <div className="group rounded-3xl border bg-card/40 p-8 transition-all hover:-translate-y-2 hover:bg-card hover:shadow-xl hover:shadow-primary/5">
-                <div className="mb-6 inline-flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                  <Layers className="size-6" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground">Passo a Passo</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  Saiba exatamente o que fazer a seguir com trilhas claras, prioridades e prazos bem definidos.
-                </p>
-              </div>
-
-              <div className="group rounded-3xl border bg-card/40 p-8 transition-all hover:-translate-y-2 hover:bg-card hover:shadow-xl hover:shadow-primary/5">
-                <div className="mb-6 inline-flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                  <BookOpen className="size-6" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground">Biblioteca Viva</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  Acesso instantâneo aos seus materiais em PDF, vídeos, áudios e links complementares.
-                </p>
-              </div>
-
-              <div className="group rounded-3xl border bg-card/40 p-8 transition-all hover:-translate-y-2 hover:bg-card hover:shadow-xl hover:shadow-primary/5">
-                <div className="mb-6 inline-flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                  <ShieldCheck className="size-6" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground">100% Seguro</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  Uma conta única, segura e exclusiva com todo o histórico do seu desempenho salvo na nuvem.
-                </p>
-              </div>
+              ))}
             </div>
           </section>
 

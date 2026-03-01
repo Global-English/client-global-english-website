@@ -41,7 +41,7 @@ export function LoginForm({
   const [isResettingPassword, setIsResettingPassword] = React.useState(false)
   const [showPassword, setShowPassword] = React.useState(false)
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = React.useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
     setSuccessMessage(null)
@@ -63,9 +63,9 @@ export function LoginForm({
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }, [email, password, isFirebaseReady, router])
 
-  async function handlePasswordReset() {
+  const handlePasswordReset = React.useCallback(async () => {
     setError(null)
     setSuccessMessage(null)
 
@@ -93,7 +93,7 @@ export function LoginForm({
     } finally {
       setIsResettingPassword(false)
     }
-  }
+  }, [email, isFirebaseReady])
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

@@ -41,7 +41,7 @@ export function SignupForm({
   const [error, setError] = React.useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = React.useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError(null)
 
@@ -90,7 +90,7 @@ export function SignupForm({
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }, [name, email, password, confirmPassword, isDisabled, isFirebaseReady, router])
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
