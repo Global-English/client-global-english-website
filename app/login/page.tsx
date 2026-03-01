@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Quote } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
 
@@ -10,9 +11,17 @@ export default function LoginPage() {
       <div className="relative hidden lg:flex flex-col justify-between w-[45%] bg-zinc-950 p-12 text-zinc-50 overflow-hidden">
         {/* Abstract Background for Premium Feel */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/10 mix-blend-overlay"></div>
+          <Image
+            src="https://res.cloudinary.com/dflvo098t/image/upload/v1772349852/toronto-canada_glefp0.jpg"
+            alt="Toronto, Canada"
+            fill
+            className="object-cover opacity-60 mix-blend-luminosity blur-[5px] scale-105"
+            priority
+          />
+          <div className="absolute inset-0 bg-linear-to-br from-primary/80 to-accent/40 mix-blend-overlay"></div>
           <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-primary/20 blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent/20 blur-[100px] -translate-x-1/2 translate-y-1/2"></div>
+          <div className="absolute inset-0 bg-zinc-950/40"></div>
         </div>
 
         <div className="relative z-10">
@@ -57,7 +66,7 @@ export default function LoginPage() {
       {/* Form Pane - Cognitive Ease */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 relative overflow-hidden">
         {/* Subtle background glow for mobile */}
-        <div className="absolute inset-0 lg:hidden -z-10 bg-gradient-to-b from-primary/5 to-transparent"></div>
+        <div className="absolute inset-0 lg:hidden -z-10 bg-linear-to-b from-primary/5 to-transparent"></div>
 
         <div className="w-full max-w-[420px] space-y-8 relative z-10">
           <div className="flex items-center justify-center gap-3 text-sm font-bold tracking-tight">

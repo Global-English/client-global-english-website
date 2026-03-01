@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { Sparkles } from "lucide-react"
 import { Logo } from "@/components/ui/logo"
@@ -13,9 +14,17 @@ export default function SignupPage() {
       <div className="relative hidden lg:flex flex-col justify-between w-[45%] bg-primary p-12 text-primary-foreground overflow-hidden">
         {/* Abstract Background for Premium Feel */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent mix-blend-overlay"></div>
+          <Image
+            src="https://res.cloudinary.com/dflvo098t/image/upload/v1772349852/ghent-belgica_nkpima.jpg"
+            alt="Ghent, Bélgica"
+            fill
+            className="object-cover opacity-60 mix-blend-luminosity blur-[5px] scale-105"
+            priority
+          />
+          <div className="absolute inset-0 bg-linear-to-br from-black/60 to-transparent mix-blend-overlay"></div>
           <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-white/10 blur-[100px] translate-x-1/3 -translate-y-1/3"></div>
           <div className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full bg-black/10 blur-[120px] -translate-x-1/2 translate-y-1/2"></div>
+          <div className="absolute inset-0 bg-primary/40 mix-blend-multiply"></div>
         </div>
 
         <div className="relative z-10 flex justify-end">
