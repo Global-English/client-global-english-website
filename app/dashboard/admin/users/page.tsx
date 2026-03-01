@@ -329,7 +329,7 @@ export default function Page() {
                 setShowForm(true)
               }
             }}
-            className="rounded-full shadow-lg shadow-primary/10"
+            className="shadow-lg shadow-primary/10"
           >
             {showForm && !selectedUser ? (
               <>
@@ -391,12 +391,12 @@ export default function Page() {
             description="Acompanhe convites e status de acesso dos integrantes da plataforma."
             icon={Users2}
             action={
-              <div className="flex items-center gap-2">
-                <div className="relative">
+              <div className="flex items-center gap-2 max-lg:w-full">
+                <div className="relative max-lg:w-full">
                   <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                   <Input
                     placeholder="Buscar usuários..."
-                    className="h-9 w-[200px] pl-9 lg:w-[300px] bg-card/40 backdrop-blur-sm border-primary/10 transition-all focus:border-primary/30"
+                    className="h-9 w-full pl-9 lg:w-[300px] bg-card/40 backdrop-blur-sm border-primary/10 transition-all focus:border-primary/30"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -409,29 +409,7 @@ export default function Page() {
                 >
                   Limpar
                 </Button>
-                <div className="flex items-center gap-1 border-l border-primary/10 ml-1 pl-2">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-8 rounded-full"
-                    onClick={handlePreviousPage}
-                    disabled={!hasPreviousPage || loading}
-                  >
-                    <Search className="size-4 rotate-180" />
-                  </Button>
-                  <span className="text-xs font-bold text-muted-foreground min-w-[3ch] text-center">
-                    {page}
-                  </span>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="size-8 rounded-full"
-                    onClick={handleNextPage}
-                    disabled={!hasNextPage || loading}
-                  >
-                    <Search className="size-4" />
-                  </Button>
-                </div>
+
               </div>
             }
           />

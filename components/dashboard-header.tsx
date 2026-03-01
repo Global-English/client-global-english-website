@@ -54,9 +54,9 @@ export const DashboardHeader = React.memo(function DashboardHeader({
             orientation="vertical"
             className="mr-2 data-[orientation=vertical]:h-4"
           />
-          <Breadcrumb>
+          <Breadcrumb className="hidden md:block">
             <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/dashboard">Global English</Link>
                 </BreadcrumbLink>
@@ -66,7 +66,7 @@ export const DashboardHeader = React.memo(function DashboardHeader({
                   const isLast = index === resolvedItems.length - 1
                   return (
                     <React.Fragment key={`${item.label}-${index}`}>
-                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbSeparator />
                       <BreadcrumbItem>
                         {isLast || !item.href ? (
                           <BreadcrumbPage>{item.label}</BreadcrumbPage>
@@ -81,7 +81,7 @@ export const DashboardHeader = React.memo(function DashboardHeader({
                 })
               ) : (
                 <>
-                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbPage>{title}</BreadcrumbPage>
                   </BreadcrumbItem>
@@ -91,7 +91,9 @@ export const DashboardHeader = React.memo(function DashboardHeader({
           </Breadcrumb>
         </div>
         <div className="ml-auto flex items-center gap-3 pr-4 text-sm text-muted-foreground">
-          {role === "admin" ? "Administrador" : "Aluno"}
+          <span className="hidden md:inline-block">
+            {role === "admin" ? "Administrador" : "Aluno"}
+          </span>
           {action ? <div>{action}</div> : null}
         </div>
       </header>
