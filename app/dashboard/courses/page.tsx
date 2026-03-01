@@ -80,11 +80,6 @@ export default function Page() {
       <DashboardHeader
         title="Cursos"
         description="Gerencie seus cursos ativos e descubra novas trilhas."
-        action={
-          <Button size="sm" onClick={() => void loadCourses()} disabled={loading}>
-            {loading ? "Atualizando..." : "Atualizar"}
-          </Button>
-        }
       />
 
       <div className="flex flex-col gap-6 p-6">
@@ -127,7 +122,7 @@ export default function Page() {
               Organizando seus materiais...
             </div>
           ) : courses.length === 0 ? (
-            <div className="col-span-full flex flex-col gap-4 rounded-3xl border-2 border-dashed border-primary/10 bg-primary/5 p-12 text-center backdrop-blur-sm">
+            <div className="col-span-full flex flex-col gap-4 rounded-2xl border border-dashed border-primary/10 bg-primary/5 p-12 text-center backdrop-blur-sm">
               <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <BookOpen className="size-8" />
               </div>

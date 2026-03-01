@@ -72,7 +72,6 @@ export default function Page() {
       <DashboardHeader
         title="Admin"
         description="Visão geral do desempenho e gestão da plataforma."
-        action={<Button size="sm">Novo relatório</Button>}
       />
 
       <div className="flex flex-col gap-6 p-6">

@@ -95,11 +95,6 @@ export default function Page() {
       <DashboardHeader
         title="Atividades"
         description="Acompanhe pendências, entregas e feedbacks das aulas."
-        action={
-          <Button size="sm" variant="outline">
-            Ver calendário
-          </Button>
-        }
       />
 
       <div className="flex flex-col gap-6 p-6">
@@ -149,7 +144,7 @@ export default function Page() {
             Preparando suas tarefas...
           </div>
         ) : activities.length === 0 ? (
-          <div className="flex flex-col gap-4 rounded-3xl border-2 border-dashed border-primary/10 bg-primary/5 p-12 text-center backdrop-blur-sm">
+          <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-primary/10 bg-primary/5 p-12 text-center backdrop-blur-sm">
             <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
               <FolderOpen className="size-8" />
             </div>

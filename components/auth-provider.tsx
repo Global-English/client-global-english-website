@@ -14,6 +14,7 @@ type AuthContextValue = {
   loading: boolean
   isFirebaseReady: boolean
   refreshProfile: () => Promise<void>
+  signOut: () => Promise<void>
 }
 
 const AuthContext = React.createContext<AuthContextValue>({
@@ -22,7 +23,8 @@ const AuthContext = React.createContext<AuthContextValue>({
   profile: null,
   loading: true,
   isFirebaseReady: false,
-  refreshProfile: async () => {},
+  refreshProfile: async () => { },
+  signOut: async () => { },
 })
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -90,9 +92,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await loadProfile(auth.currentUser)
   }, [loadProfile])
 
+  const signOut = React.useCallback(async () => {
+    await signOutUser()
+  }, [])
+
   return (
     <AuthContext.Provider
-      value={{ user, role, profile, loading, isFirebaseReady, refreshProfile }}
+      value={{ user, role, profile, loading, isFirebaseReady, refreshProfile, signOut }}
     >
       {children}
     </AuthContext.Provider>

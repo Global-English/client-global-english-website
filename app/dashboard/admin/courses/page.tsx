@@ -302,12 +302,12 @@ export default function Page() {
             description="Gerencie o que está visível para os alunos e acompanhe métricas de engajamento."
             icon={BookOpenCheck}
             action={
-              <div className="flex items-center gap-2">
-                <div className="relative">
+              <div className="flex items-center gap-2 max-lg:w-full">
+                <div className="relative max-lg:w-full">
                   <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                   <Input
                     placeholder="Buscar cursos..."
-                    className="h-9 w-[200px] pl-9 lg:w-[300px] bg-card/40 backdrop-blur-sm border-primary/10 transition-all focus:border-primary/30"
+                    className="h-9 w-full pl-9 lg:w-[300px] bg-card/40 backdrop-blur-sm border-primary/10 transition-all focus:border-primary/30"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -319,15 +319,6 @@ export default function Page() {
                   onClick={() => setSearchQuery("")}
                 >
                   Limpar
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="rounded-full ml-1"
-                  onClick={() => void loadCourses(true)}
-                  disabled={loading}
-                >
-                  Atualizar
                 </Button>
               </div>
             }

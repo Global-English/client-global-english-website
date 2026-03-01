@@ -32,7 +32,7 @@ export const DashboardStatCard = React.memo(function DashboardStatCard({
             "hover:bg-primary/5 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1",
             className
         )}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70">
                     {title}
                 </CardTitle>
@@ -42,7 +42,7 @@ export const DashboardStatCard = React.memo(function DashboardStatCard({
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-1.5">
-                    <div className="text-3xl font-black tracking-tighter text-foreground">
+                    <div className="text-3xl font-bold tracking-tighter text-foreground">
                         {loading ? (
                             <span className="inline-block animate-pulse rounded-lg bg-muted h-9 w-20" />
                         ) : (

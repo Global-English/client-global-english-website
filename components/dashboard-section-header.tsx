@@ -21,7 +21,7 @@ export function DashboardSectionHeader({
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
                     {Icon && <Icon className="size-5 text-primary" />}
-                    <h2 className="text-lg font-black tracking-tight text-foreground">{title}</h2>
+                    <h2 className="text-lg font-bold tracking-tight text-foreground">{title}</h2>
                 </div>
                 {description && (
                     <p className="text-sm font-medium text-muted-foreground/60 max-w-2xl">

@@ -82,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const navSecondary = React.useMemo(
     () => [
-      { title: "Suporte", url: "#", icon: LifeBuoy },
+      { title: "Suporte", url: "/dashboard/support", icon: LifeBuoy },
       { title: "Configurações", url: "/dashboard/settings", icon: Settings },
     ],
     []
@@ -93,7 +93,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton size="lg" asChild isActive>
               <Link href="/dashboard">
                 <div className="flex items-center gap-3 text-sm font-semibold tracking-tight">
                   <Logo className="size-9" />

@@ -30,7 +30,7 @@ export function DashboardNavCard({
                 className
             )}>
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                    <Icon className="size-24 -mr-8 -mt-8" />
+                    <Icon className="size-24 -mr-8 -mt-8 text-primary" />
                 </div>
 
                 <CardContent className="p-6 flex items-start gap-4">
@@ -39,7 +39,7 @@ export function DashboardNavCard({
                     </div>
 
                     <div className="flex-1 space-y-1 pr-6">
-                        <h3 className="font-black text-lg tracking-tight text-foreground transition-colors group-hover:text-primary">
+                        <h3 className="font-bold text-lg tracking-tight text-foreground transition-colors group-hover:text-primary">
                             {title}
                         </h3>
                         <p className="text-sm font-medium text-muted-foreground/60 leading-relaxed">
