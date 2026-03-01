@@ -26,6 +26,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { usePathname } from "next/navigation"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, role, profile } = useAuth()
@@ -37,40 +38,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const email = React.useMemo(() => user?.email || "Sem email", [user?.email])
   const avatar = React.useMemo(() => user?.photoURL || "", [user?.photoURL])
 
+  const pathname = usePathname()
+
   const navMain = React.useMemo(() => {
     const items = [
       {
         title: "Visão geral",
         url: "/dashboard",
         icon: Command,
-        isActive: true,
+        isActive: pathname === "/dashboard",
       },
       {
         title: "Cursos",
         url: "/dashboard/courses",
         icon: GraduationCap,
-        items: [
-          { title: "Meus cursos", url: "/dashboard/courses" },
-          { title: "Catálogo", url: "/dashboard/courses" },
-        ],
+        isActive: pathname.startsWith("/dashboard/courses"),
       },
       {
         title: "Atividades",
         url: "/dashboard/activities",
         icon: ClipboardCheck,
-        items: [
-          { title: "Pendências", url: "/dashboard/activities" },
-          { title: "Concluídas", url: "/dashboard/activities" },
-        ],
+        isActive: pathname.startsWith("/dashboard/activities"),
       },
       {
         title: "Materiais",
         url: "/dashboard/materials",
         icon: BookOpen,
-        items: [
-          { title: "Biblioteca", url: "/dashboard/materials" },
-          { title: "Favoritos", url: "/dashboard/materials" },
-        ],
+        isActive: pathname.startsWith("/dashboard/materials"),
       },
     ]
 
@@ -79,15 +73,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Admin",
         url: "/dashboard/admin",
         icon: ShieldCheck,
-        items: [
-          { title: "Usuários", url: "/dashboard/admin/users" },
-          { title: "Cursos", url: "/dashboard/admin/courses" },
-        ],
+        isActive: pathname.startsWith("/dashboard/admin"),
       })
     }
 
     return items
-  }, [isAdmin])
+  }, [isAdmin, pathname])
 
   const navSecondary = React.useMemo(
     () => [
