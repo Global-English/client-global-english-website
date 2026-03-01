@@ -15,8 +15,8 @@ import {
   validatePassword,
 } from "@/lib/auth/validators"
 import { auth, hasFirebaseConfig } from "@/lib/firebase/client"
-import { ensureUserProfile, setUserMustChangePassword } from "@/lib/firebase/firestore"
-import { resolveUserRole } from "@/lib/firebase/roles"
+import { syncUserProfile } from "@/lib/firebase/auth-actions"
+import { setUserMustChangePassword } from "@/lib/firebase/firestore"
 
 function getAuthOrThrow() {
   if (!hasFirebaseConfig || !auth) {
@@ -48,13 +48,10 @@ export async function signInWithEmail(params: {
     params.password
   )
 
-  await ensureUserProfile({
+  await syncUserProfile({
     uid: credential.user.uid,
     name: credential.user.displayName ?? credential.user.email ?? "",
     email: credential.user.email ?? normalizedEmail,
-    role: resolveUserRole({
-      email: credential.user.email ?? normalizedEmail,
-    }),
   })
 
   return credential.user
@@ -101,11 +98,10 @@ export async function signUpWithEmail(params: {
     // no-op by design
   }
 
-  await ensureUserProfile({
+  await syncUserProfile({
     uid: credential.user.uid,
     name: params.name.trim(),
     email: normalizedEmail,
-    role: resolveUserRole({ email: normalizedEmail }),
   })
 
   return credential.user

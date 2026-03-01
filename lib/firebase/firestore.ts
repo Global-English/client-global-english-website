@@ -10,7 +10,6 @@
 } from "firebase/firestore"
 import { db, hasFirebaseConfig } from "@/lib/firebase/client"
 import { COLLECTIONS } from "@/lib/firebase/collections"
-import { resolveUserRole } from "@/lib/firebase/roles"
 import type {
   Activity,
   AdminCourseSummary,
@@ -33,44 +32,6 @@ function getDbOrThrow() {
   return db
 }
 
-export async function ensureUserProfile(params: {
-  uid: string
-  name: string
-  email: string
-  role?: UserRole
-}) {
-  const firestore = getDbOrThrow()
-
-  const userRef = doc(firestore, COLLECTIONS.users, params.uid)
-  const snapshot = await getDoc(userRef)
-
-  const existingRole = snapshot.exists()
-    ? ((snapshot.data().role ?? "user") as UserRole)
-    : null
-  const resolvedRole = resolveUserRole({
-    email: params.email,
-    existingRole: params.role ?? existingRole,
-  })
-
-  await setDoc(
-    userRef,
-    {
-      uid: params.uid,
-      name: params.name,
-      email: params.email,
-      role: resolvedRole,
-      mustChangePassword:
-        snapshot.exists() && "mustChangePassword" in snapshot.data()
-          ? Boolean(snapshot.data().mustChangePassword)
-          : false,
-      createdAt: snapshot.exists()
-        ? snapshot.data().createdAt ?? serverTimestamp()
-        : serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  )
-}
 
 export async function fetchUserProfile(uid: string): Promise<UserProfile | null> {
   const firestore = getDbOrThrow()
