@@ -11,7 +11,10 @@ import {
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { SummaryCard } from "@/components/summary-card"
+import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { StudentCourseCard } from "@/modules/courses/ui/student-course-card"
+import { StudentActivityCard } from "@/modules/activities/ui/student-activity-card"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserDashboard } from "@/lib/firebase/firestore"
 import type { DashboardCourse } from "@/lib/firebase/types"
@@ -65,11 +68,11 @@ export default function Page() {
       ),
       progress: courses.length
         ? Math.round(
-            courses.reduce(
-              (sum, course) => sum + course.enrollment.progress,
-              0
-            ) / courses.length
-          )
+          courses.reduce(
+            (sum, course) => sum + course.enrollment.progress,
+            0
+          ) / courses.length
+        )
         : 0,
     }),
     [courses]
@@ -113,164 +116,117 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <SummaryCard
+          <DashboardStatCard
             label="Cursos ativos"
             value={stats.courses}
             icon={GraduationCap}
+            description="Cursos em andamento"
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Trilhas"
             value={stats.tracks}
             icon={Layers}
+            description="Módulos disponíveis"
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Atividades"
             value={stats.activities}
             icon={ClipboardCheck}
+            description="Total de atividades"
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Progresso médio"
             value={`${stats.progress}%`}
             icon={ListChecks}
+            description="Conclusão geral"
           />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <Card>
-            <CardHeader className="flex items-center justify-between gap-2 sm:flex-row">
-              <div>
-                <CardTitle className="text-base">Cursos ativos</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Acesse rapidamente seus módulos e progresso.
-                </p>
-              </div>
-            </CardHeader>
-            <CardContent>
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="space-y-6">
+            <AdminSectionHeader
+              title="Meus Cursos"
+              description="Continue de onde parou para manter seu ritmo de aprendizado."
+              icon={GraduationCap}
+            />
+
+            <div className="grid gap-6">
               {isLoading ? (
-                <p className="text-sm text-muted-foreground">
-                  Carregando seus cursos...
-                </p>
+                <div className="flex items-center justify-center p-12 text-muted-foreground animate-pulse">
+                  Carregando sua jornada...
+                </div>
               ) : courses.length ? (
-                <div className="space-y-4">
+                <div className="grid gap-6 sm:grid-cols-2">
                   {courses.map((course) => (
-                    <div
-                      key={course.id}
-                      className="rounded-2xl border p-4 transition-colors hover:border-primary/40"
-                    >
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="text-sm font-semibold">{course.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {course.description ||
-                              "Plano de estudos com foco em conversação."}
-                          </p>
-                        </div>
-                        <span className="rounded-full bg-accent/60 px-3 py-1 text-xs">
-                          {course.enrollment.progress}% concluído
-                        </span>
-                      </div>
-                      <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
-                        <span>{course.level}</span>
-                        <span>{course.tracks.length} módulos</span>
-                        <span>{course.activities.length} atividades</span>
-                      </div>
-                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-primary"
-                          style={{
-                            width: `${Math.max(
-                              0,
-                              Math.min(100, course.enrollment.progress)
-                            )}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
+                    <StudentCourseCard key={course.id} course={course} />
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col gap-2 rounded-2xl border border-dashed p-6 text-center">
-                  <GraduationCap className="mx-auto size-6 text-muted-foreground" />
-                  <p className="text-sm font-medium">
-                    Nenhum curso atribuído ainda
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Quando você for matriculado, seus cursos aparecerão aqui.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="border-dashed">
-            <CardHeader>
-              <CardTitle className="text-base">Próximas atividades</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Itens liberados recentemente para você continuar.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {upcomingActivities.length ? (
-                upcomingActivities.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="rounded-2xl border bg-background p-3"
-                  >
-                    <p className="text-sm font-medium">{activity.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {activity.courseTitle}
-                      {activity.trackTitle ? ` • ${activity.trackTitle}` : ""}
+                <div className="flex flex-col gap-4 rounded-3xl bg-card/40 backdrop-blur-md border-primary/10 hover:bg-primary/5 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 p-12 text-center">
+                  <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <GraduationCap className="size-8" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-lg font-black tracking-tight text-foreground">
+                      Nenhum curso atribuído
+                    </p>
+                    <p className="text-sm text-muted-foreground/60">
+                      Sua jornada está prestes a começar. Fique atento!
                     </p>
                   </div>
-                ))
-              ) : (
-                <div className="rounded-2xl border border-dashed p-4 text-xs text-muted-foreground">
-                  Nenhuma atividade disponível no momento.
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <AdminSectionHeader
+              title="Próximos Passos"
+              description="Atividades recentes."
+              icon={Sparkles}
+            />
+
+            <div className="space-y-4">
+              {upcomingActivities.length ? (
+                upcomingActivities.map((activity) => (
+                  <StudentActivityCard
+                    key={activity.id}
+                    activity={{
+                      ...activity,
+                      status: "in_progress",
+                    }}
+                    variant="compact"
+                  />
+                ))
+              ) : (
+                <div className="space-y-2.5 rounded-2xl border border-primary/5 bg-primary/5 p-4 group-hover:bg-primary/10 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Nenhuma tarefa pendente</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {courses.length > 0 && (
+              <Card className="overflow-hidden border-primary/10 bg-primary/5 backdrop-blur-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-black uppercase tracking-widest text-primary/60 flex items-center gap-2">
+                    <Sparkles className="size-4" />
+                    Insight de hoje
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-xs font-medium leading-relaxed text-muted-foreground">
+                    Alunos que mantêm uma rotina de 15 minutos diários têm 3x mais chances de atingir a fluência em 1 ano.
+                    <span className="block mt-2 font-black text-primary/80">Keep going! 🚀</span>
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
 
-        {courses.length > 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Resumo de carga</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-3 md:grid-cols-3">
-              <SummaryCard
-                label="Cursos ativos"
-                value={courses.length}
-                icon={GraduationCap}
-              />
-              <SummaryCard
-                label="Módulos"
-                value={courses.reduce(
-                  (acc, course) => acc + course.tracks.length,
-                  0
-                )}
-                icon={Layers}
-              />
-              <SummaryCard
-                label="Progresso médio"
-                value={`${Math.round(
-                  courses.reduce(
-                    (acc, course) => acc + (course.enrollment.progress ?? 0),
-                    0
-                  ) / courses.length
-                )}%`}
-                icon={ListChecks}
-              />
-              <div className="flex items-center gap-3 rounded-2xl border p-3 md:col-span-3">
-                <Sparkles className="size-4 text-primary" />
-                <p className="text-xs text-muted-foreground">
-                  Dica: cursos com progresso acima de 70% tendem a ter maior
-                  conclusão.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ) : null}
+        {/* Summary Footer removed as it's redundant with StatCards */}
       </div>
     </div>
   )

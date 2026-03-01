@@ -10,11 +10,13 @@ import {
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { SummaryCard } from "@/components/summary-card"
+import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { StudentActivityCard } from "@/modules/activities/ui/student-activity-card"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserActivities, fetchUserDashboard } from "@/lib/firebase/firestore"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 
 type ActivityView = {
   id: string
@@ -114,70 +116,62 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <SummaryCard
+          <DashboardStatCard
             label="Atividades liberadas"
             value={activities.length}
             icon={ClipboardCheck}
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Tempo estimado"
             value={`${totalMinutes} min`}
             icon={Clock}
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Tipos diferentes"
             value={Object.keys(typeCounts).length}
             icon={Target}
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Em andamento"
             value={activities.length}
             icon={ListChecks}
           />
         </div>
 
+        <AdminSectionHeader
+          title="Minhas Atividades"
+          description="Acompanhe pendências, entregas e feedbacks das aulas."
+          icon={ClipboardCheck}
+        />
+
         {loading ? (
-          <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
-            Carregando atividades...
+          <div className="flex h-64 items-center justify-center text-muted-foreground animate-pulse">
+            Preparando suas tarefas...
           </div>
         ) : activities.length === 0 ? (
-          <div className="rounded-2xl border border-dashed p-6 text-center">
-            <FolderOpen className="mx-auto size-6 text-muted-foreground" />
-            <p className="mt-2 text-sm font-medium">Nenhuma atividade encontrada</p>
-            <p className="text-xs text-muted-foreground">
-              Assim que seu curso liberar atividades, elas aparecerão aqui.
-            </p>
+          <div className="flex flex-col gap-4 rounded-3xl border-2 border-dashed border-primary/10 bg-primary/5 p-12 text-center backdrop-blur-sm">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <FolderOpen className="size-8" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-lg font-black tracking-tight text-foreground">
+                Nenhuma atividade encontrada
+              </p>
+              <p className="text-sm text-muted-foreground/60">
+                Assim que seu curso liberar atividades, elas aparecerão aqui.
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {activities.map((activity) => (
-              <Card key={activity.id}>
-                <CardHeader className="space-y-2">
-                  <CardTitle className="text-base">{activity.title}</CardTitle>
-                  <p className="text-xs text-muted-foreground">
-                    {activity.courseTitle}
-                    {activity.trackTitle ? ` • ${activity.trackTitle}` : ""}
-                  </p>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="capitalize">{activity.type}</span>
-                    <span className="rounded-full bg-accent/60 px-3 py-1 text-xs">
-                      Em andamento
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <Clock className="size-4" />
-                    Estimativa: {activity.estimatedMinutes || 0} minutos
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Button size="sm">Abrir</Button>
-                    <Button size="sm" variant="outline">
-                      Marcar como concluída
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <StudentActivityCard
+                key={activity.id}
+                activity={{
+                  ...activity,
+                  status: "in_progress",
+                }}
+              />
             ))}
           </div>
         )}

@@ -4,63 +4,16 @@ import * as React from "react"
 import { FileAudio, FileText, Link as LinkIcon, Video } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { SummaryCard } from "@/components/summary-card"
+import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { StudentMaterialCard } from "@/modules/materials/ui/student-material-card"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserMaterials } from "@/lib/firebase/firestore"
 import type { Material } from "@/lib/firebase/types"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 
-const MATERIAL_TYPE_LABELS: Record<string, string> = {
-  pdf: "PDF",
-  video: "Vídeo",
-  audio: "Áudio",
-  link: "Link",
-}
-
-function resolveMaterialIcon(type?: string) {
-  switch (type) {
-    case "video":
-      return Video
-    case "audio":
-      return FileAudio
-    case "link":
-      return LinkIcon
-    case "pdf":
-    default:
-      return FileText
-  }
-}
-
-function resolveMaterialMeta(material: Material) {
-  const attachments = material.attachments ?? []
-  const attachmentType = attachments.find((item) => item.type)?.type
-  const baseType = attachmentType ?? material.type
-  const hasMarkdown = Boolean(material.markdown?.trim())
-  const hasLink = Boolean(material.url?.trim())
-
-  const detailParts: string[] = []
-  if (hasMarkdown) {
-    detailParts.push("Texto")
-  }
-  if (attachments.length) {
-    detailParts.push(
-      `${attachments.length} anexo${attachments.length > 1 ? "s" : ""}`
-    )
-  }
-  if (hasLink && !attachments.length) {
-    detailParts.push("Link")
-  }
-
-  return {
-    icon: resolveMaterialIcon(baseType),
-    typeLabel:
-      baseType && MATERIAL_TYPE_LABELS[baseType]
-        ? MATERIAL_TYPE_LABELS[baseType]
-        : "Material",
-    details: detailParts.join(" • "),
-  }
-}
+// Helper functions removed as they are now handled by StudentMaterialCard
 
 export default function Page() {
   const { user, isFirebaseReady } = useAuth()
@@ -123,69 +76,53 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <SummaryCard label="Materiais" value={materials.length} icon={FileText} />
-          <SummaryCard
+          <DashboardStatCard label="Materiais" value={materials.length} icon={FileText} />
+          <DashboardStatCard
             label="Anexos"
             value={totalAttachments}
             icon={LinkIcon}
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Textos"
             value={markdownCount}
             icon={FileText}
           />
-          <SummaryCard
+          <DashboardStatCard
             label="Liberados"
             value={materials.length}
             icon={Video}
           />
         </div>
 
+        <AdminSectionHeader
+          title="Biblioteca de Materiais"
+          description="Acesse textos, anexos e links liberados pelos módulos."
+          icon={FileText}
+        />
+
         {loading ? (
-          <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
-            Carregando materiais...
+          <div className="flex h-64 items-center justify-center text-muted-foreground animate-pulse">
+            Sincronizando biblioteca...
           </div>
         ) : materials.length === 0 ? (
-          <div className="rounded-2xl border border-dashed p-6 text-center">
-            <FileText className="mx-auto size-6 text-muted-foreground" />
-            <p className="mt-2 text-sm font-medium">
-              Nenhum material disponível
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Assim que novos conteúdos forem liberados, eles aparecerão aqui.
-            </p>
+          <div className="flex flex-col gap-4 rounded-3xl border-2 border-dashed border-primary/10 bg-primary/5 p-12 text-center backdrop-blur-sm">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <FileText className="size-8" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-lg font-black tracking-tight text-foreground">
+                Nenhum material disponível
+              </p>
+              <p className="text-sm text-muted-foreground/60">
+                Assim que novos conteúdos forem liberados, eles aparecerão aqui.
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {materials.map((material) => {
-              const meta = resolveMaterialMeta(material)
-              const Icon = meta.icon
-
-              return (
-                <Card key={material.id}>
-                  <CardHeader className="space-y-2">
-                    <Icon className="size-5 text-muted-foreground" />
-                    <CardTitle className="text-base">{material.title}</CardTitle>
-                    <p className="text-xs text-muted-foreground">
-                      {meta.typeLabel}
-                      {meta.details ? ` • ${meta.details}` : ""}
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>
-                        {material.trackId
-                          ? "Material do módulo"
-                          : "Material do curso"}
-                      </span>
-                      <Button size="sm" variant="outline">
-                        Abrir
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            })}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {materials.map((material) => (
+              <StudentMaterialCard key={material.id} material={material} />
+            ))}
           </div>
         )}
       </div>
