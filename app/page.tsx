@@ -10,22 +10,21 @@ import {
   Users
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarGroup, AvatarImage } from "@/components/ui/avatar"
+import { Logo } from "@/components/ui/logo"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       {/* Abstract Background Elements */}
       <div className="pointer-events-none absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-[#ff80b5] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{ clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" }} />
+        <div className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-[#ff80b5] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{ clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" }} />
       </div>
 
       <div className="mx-auto flex w-full max-w-6xl flex-col px-6 py-6 md:py-10 flex-1">
         {/* Header */}
         <header className="flex items-center justify-between z-10 relative">
           <div className="flex items-center gap-3 text-sm font-bold tracking-tight">
-            <span className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-lg shadow-primary/20">
-              GE
-            </span>
+            <Logo className="size-10 text-primary" />
             <span className="text-xl">Global English</span>
           </div>
           <div className="flex items-center gap-4 text-sm font-medium">
@@ -100,7 +99,7 @@ export default function Home() {
 
             {/* Visual Glassmorphic Dashboard Mockup */}
             <div className="relative mx-auto w-full max-w-[500px] lg:max-w-none perspective-[1000px]">
-              <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-tr from-primary/30 to-accent/30 blur-2xl opacity-60"></div>
+              <div className="absolute -inset-1 rounded-[2rem] bg-linear-to-tr from-primary/30 to-accent/30 blur-2xl opacity-60"></div>
               <div className="relative rounded-[2rem] border bg-background/60 backdrop-blur-xl p-8 shadow-2xl ring-1 ring-border/50 transition-transform duration-500 hover:rotate-y-[-5deg] hover:rotate-x-[5deg]">
                 <div className="space-y-6">
                   <div className="flex items-center justify-between text-sm">

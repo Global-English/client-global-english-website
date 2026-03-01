@@ -97,33 +97,40 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Bem-vindo de volta</CardTitle>
-          <CardDescription>
-            Acesse seus cursos e trilhas de aprendizado.
+      <Card className="border-border/50 shadow-xl shadow-primary/5 rounded-[2rem] rounded-b-none bg-card/80 backdrop-blur-xl">
+        <CardHeader className="text-center pt-8 pb-4">
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+            Acesso ao Portal
+          </CardTitle>
+          <CardDescription className="text-base text-muted-foreground">
+            Insira suas credenciais para entrar na plataforma.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 pb-8">
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email" className="font-medium text-foreground">
+                  E-mail
+                </FieldLabel>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="seu@email.com"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+                  className="h-12 rounded-xl border-border/60 bg-background/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all text-base"
                 />
               </Field>
               <Field>
                 <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Senha</FieldLabel>
+                  <FieldLabel htmlFor="password" className="font-medium text-foreground">
+                    Senha
+                  </FieldLabel>
                   <button
                     type="button"
-                    className="ml-auto text-sm text-muted-foreground underline-offset-4 hover:underline disabled:opacity-60"
+                    className="ml-auto text-sm font-medium text-primary hover:text-primary/80 transition-colors disabled:opacity-60"
                     onClick={handlePasswordReset}
                     disabled={isResettingPassword || isSubmitting}
                   >
@@ -135,13 +142,14 @@ export function LoginForm({
                     id="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    className="pr-10"
+                    className="h-12 rounded-xl pr-10 border-border/60 bg-background/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all text-base tracking-widest placeholder:tracking-normal"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground p-1 rounded-md hover:bg-muted"
                     onClick={() => setShowPassword((prev) => !prev)}
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   >
@@ -153,33 +161,38 @@ export function LoginForm({
                   </button>
                 </div>
               </Field>
-              <Field>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Entrando..." : "Entrar"}
+              <Field className="pt-2">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full h-12 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all text-base active:translate-y-0"
+                >
+                  {isSubmitting ? "Entrando..." : "Acessar Plataforma"}
                 </Button>
-                <FieldDescription className="text-center">
-                  Acesso restrito a contas autorizadas.
-                </FieldDescription>
                 {error ? (
-                  <FieldDescription className="text-center text-destructive">
+                  <div className="rounded-lg bg-destructive/10 p-3 mt-4 border border-destructive/20 text-center text-sm font-medium text-destructive">
                     {error}
-                  </FieldDescription>
+                  </div>
                 ) : null}
                 {successMessage ? (
-                  <FieldDescription className="text-center text-green-600">
+                  <div className="rounded-lg bg-green-500/10 p-3 mt-4 border border-green-500/20 text-center text-sm font-medium text-green-700 dark:text-green-400">
                     {successMessage}
-                  </FieldDescription>
+                  </div>
                 ) : null}
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        Ao continuar, você concorda com nossos{" "}
-        <Link href="#">Termos de Uso</Link> e{" "}
-        <Link href="#">Política de Privacidade</Link>.
-      </FieldDescription>
+
+      <div className="text-center text-sm text-muted-foreground mt-4 space-y-4">
+        <div>
+          Não tem uma conta?{" "}
+          <Link href="/signup" className="font-semibold text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline">
+            Fale com a coordenação
+          </Link>
+        </div>
+      </div>
       {!isFirebaseReady ? (
         <FieldDescription className="px-6 text-center text-xs text-muted-foreground">
           Firebase não configurado. Conecte para usar autenticação real.

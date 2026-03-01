@@ -94,93 +94,107 @@ export function SignupForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Crie sua conta</CardTitle>
-          <CardDescription>
-            Cadastre-se para acompanhar suas trilhas e materiais.
+      <Card className="border-border/50 shadow-xl shadow-primary/5 rounded-[2rem] rounded-b-none bg-card/80 backdrop-blur-xl">
+        <CardHeader className="text-center pt-8 pb-4">
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+            Ative sua Conta
+          </CardTitle>
+          <CardDescription className="text-base text-muted-foreground">
+            Complete seu cadastro para acessar as trilhas.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 pb-8">
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="name">Nome completo</FieldLabel>
+                <FieldLabel htmlFor="name" className="font-medium text-foreground">
+                  Nome completo
+                </FieldLabel>
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Seu nome completo"
+                  placeholder="Como gostaria de ser chamado"
                   required
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   disabled={isDisabled}
+                  className="h-12 rounded-xl border-border/60 bg-background/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all text-base"
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email" className="font-medium text-foreground">
+                  E-mail institucional
+                </FieldLabel>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="seu@aluno.com"
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   disabled={isDisabled}
+                  className="h-12 rounded-xl border-border/60 bg-background/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all text-base"
                 />
               </Field>
-              <Field>
-                <Field className="grid grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel htmlFor="password">Senha</FieldLabel>
-                    <Input
-                      id="password"
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
-                      disabled={isDisabled}
-                    />
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="confirm-password">
-                      Confirmar senha
-                    </FieldLabel>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      required
-                      value={confirmPassword}
-                      onChange={(event) => setConfirmPassword(event.target.value)}
-                      disabled={isDisabled}
-                    />
-                  </Field>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <Field>
+                  <FieldLabel htmlFor="password" className="font-medium text-foreground">
+                    Criar Senha
+                  </FieldLabel>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    disabled={isDisabled}
+                    className="h-12 rounded-xl border-border/60 bg-background/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all text-base tracking-widest placeholder:tracking-normal"
+                  />
                 </Field>
-                <FieldDescription>
-                  Use ao menos 8 caracteres, com maiúscula, minúscula e número.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <Button type="submit" disabled={isSubmitting || isDisabled}>
-                  {isSubmitting ? "Criando..." : "Criar conta"}
+                <Field>
+                  <FieldLabel htmlFor="confirm-password" className="font-medium text-foreground">
+                    Confirmar
+                  </FieldLabel>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    disabled={isDisabled}
+                    className="h-12 rounded-xl border-border/60 bg-background/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all text-base tracking-widest placeholder:tracking-normal"
+                  />
+                </Field>
+              </div>
+              <Field className="pt-4">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || isDisabled}
+                  className="w-full h-12 rounded-xl font-semibold shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all text-base active:translate-y-0"
+                >
+                  {isSubmitting ? "Ativando..." : "Ativar minha conta"}
                 </Button>
-                <FieldDescription className="text-center">
-                  Já tem conta? <Link href="/login">Entrar</Link>
-                </FieldDescription>
                 {error ? (
-                  <FieldDescription className="text-center text-destructive">
+                  <div className="rounded-lg bg-destructive/10 p-3 mt-4 border border-destructive/20 text-center text-sm font-medium text-destructive">
                     {error}
-                  </FieldDescription>
+                  </div>
                 ) : null}
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        Ao continuar, você concorda com nossos{" "}
-        <Link href="#">Termos de Uso</Link> e{" "}
-        <Link href="#">Política de Privacidade</Link>.
-      </FieldDescription>
+
+      <div className="text-center text-sm text-muted-foreground mt-4 space-y-4">
+        <div>
+          Já tem conta ativa?{" "}
+          <Link href="/login" className="font-semibold text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline">
+            Faça login aqui
+          </Link>
+        </div>
+      </div>
       {!isFirebaseReady ? (
         <FieldDescription className="px-6 text-center text-xs text-muted-foreground">
           Firebase não configurado. Conecte para usar autenticação real.
