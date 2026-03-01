@@ -15,8 +15,7 @@ import { DashboardStatCard } from "@/components/dashboard-stat-card"
 import { StudentActivityCard } from "@/modules/activities/ui/student-activity-card"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserActivities, fetchUserDashboard } from "@/lib/firebase/firestore"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+
 
 type ActivityView = {
   id: string

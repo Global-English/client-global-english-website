@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import * as React from "react"
-import { FileAudio, FileText, Link as LinkIcon, Video } from "lucide-react"
+import { FileText, Link as LinkIcon, Video } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardSectionHeader } from "@/components/dashboard-section-header"
@@ -10,8 +10,7 @@ import { StudentMaterialCard } from "@/modules/materials/ui/student-material-car
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserMaterials } from "@/lib/firebase/firestore"
 import type { Material } from "@/lib/firebase/types"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+
 
 // Helper functions removed as they are now handled by StudentMaterialCard
 

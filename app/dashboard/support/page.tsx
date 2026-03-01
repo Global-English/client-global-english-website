@@ -93,7 +93,7 @@ export default function Page() {
                             />
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            Ex: "como resetar senha", "acessar certificados", "materiais extras"
+                            Ex: &quot;como resetar senha&quot;, &quot;acessar certificados&quot;, &quot;materiais extras&quot;
                         </p>
                     </div>
                 </div>

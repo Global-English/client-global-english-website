@@ -5,9 +5,7 @@ import {
   GraduationCap,
   Layers,
   ShieldCheck,
-  CheckCircle2,
   Sparkles,
-  Users
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarGroup, AvatarImage } from "@/components/ui/avatar"
 import { Logo } from "@/components/ui/logo"

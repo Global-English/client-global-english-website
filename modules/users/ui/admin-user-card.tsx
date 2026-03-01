@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Edit, Eye, Flame, ShieldCheck, Snowflake, Trash2, User } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -42,7 +43,7 @@ export function AdminUserCard({
                     )}
                 >
                     {item.photoURL ? (
-                        <img src={item.photoURL} alt={item.name} className="size-full object-cover" />
+                        <Image src={item.photoURL} alt={item.name} fill className="object-cover" />
                     ) : isAdmin ? (
                         <ShieldCheck className="size-4" />
                     ) : (

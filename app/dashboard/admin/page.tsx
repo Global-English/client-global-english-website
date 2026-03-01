@@ -5,7 +5,6 @@ import { GraduationCap, LayoutDashboard, Users2 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
 import { useAuth } from "@/hooks/use-auth"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fetchAdminOverview } from "@/lib/firebase/firestore"
 import { DashboardNavCard } from "@/components/dashboard-nav-card"

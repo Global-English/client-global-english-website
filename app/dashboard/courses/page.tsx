@@ -1,11 +1,9 @@
 ﻿"use client"
 
 import * as React from "react"
-import Image from "next/image"
 import {
   BarChart3,
   BookOpen,
-  CalendarClock,
   ClipboardList,
   Sparkles,
 } from "lucide-react"
@@ -15,8 +13,7 @@ import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
 import { StudentCourseCard } from "@/modules/courses/ui/student-course-card"
 import { useAuth } from "@/hooks/use-auth"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+
 import { fetchUserDashboard } from "@/lib/firebase/firestore"
 import type { DashboardCourse } from "@/lib/firebase/types"
 

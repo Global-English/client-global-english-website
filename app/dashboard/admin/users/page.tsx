@@ -24,7 +24,7 @@ import {
 } from "@/modules/users"
 
 const USERS_PAGE_SIZE = 12
-const ROOT_CURSOR = "__root__"
+
 
 type EditableUser = {
   uid: string
@@ -60,10 +60,7 @@ export default function Page() {
     null
   )
   const [searchQuery, setSearchQuery] = React.useState("")
-  const [nextCursor, setNextCursor] = React.useState<string | null>(null)
-  const [currentCursor, setCurrentCursor] = React.useState<string | null>(null)
-  const [cursorHistory, setCursorHistory] = React.useState<string[]>([])
-  const [page, setPage] = React.useState(1)
+
   const [showForm, setShowForm] = React.useState(false)
   const breadcrumbItems = React.useMemo(() => [{ label: "Admin", href: "/dashboard/admin" }, { label: "Usuários" }], [])
 
@@ -79,7 +76,6 @@ export default function Page() {
           cursor,
         })) as AdminUsersPageResponse
         setUsers(data.items)
-        setNextCursor(data.nextCursor)
       } catch {
         setError("Não foi possível carregar os usuários.")
       } finally {
@@ -94,9 +90,6 @@ export default function Page() {
       return
     }
 
-    setCurrentCursor(null)
-    setCursorHistory([])
-    setPage(1)
     void loadUsersPage(null)
   }, [isFirebaseReady, role, loadUsersPage])
 
@@ -150,33 +143,6 @@ export default function Page() {
     )
   }
 
-  const hasPreviousPage = cursorHistory.length > 0
-  const hasNextPage = Boolean(nextCursor)
-
-  const handleNextPage = async () => {
-    if (!nextCursor || loading) {
-      return
-    }
-
-    setCursorHistory((prev) => [...prev, currentCursor ?? ROOT_CURSOR])
-    setCurrentCursor(nextCursor)
-    setPage((prev) => prev + 1)
-    await loadUsersPage(nextCursor)
-  }
-
-  const handlePreviousPage = async () => {
-    if (!cursorHistory.length || loading) {
-      return
-    }
-
-    const previousCursorRaw = cursorHistory[cursorHistory.length - 1]
-    const previousCursor = previousCursorRaw === ROOT_CURSOR ? null : previousCursorRaw
-
-    setCursorHistory((prev) => prev.slice(0, -1))
-    setCurrentCursor(previousCursor)
-    setPage((prev) => Math.max(1, prev - 1))
-    await loadUsersPage(previousCursor)
-  }
 
   const teamOptions = Array.from(
     new Set(
@@ -233,7 +199,7 @@ export default function Page() {
     const idToken = user ? await user.getIdToken() : null
     try {
       await deleteAdminUser(idToken, { uid: target.uid })
-      await loadUsersPage(currentCursor)
+      await loadUsersPage(null)
     } catch {
       setError("Não foi possível excluir o usuário.")
     }
@@ -288,9 +254,6 @@ export default function Page() {
           setShowForm(false)
         }
 
-        setCurrentCursor(null)
-        setCursorHistory([])
-        setPage(1)
         await loadUsersPage(null)
         setForm({
           uid: "",

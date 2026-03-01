@@ -30,7 +30,7 @@ interface StudentActivityCardProps {
     onComplete?: (id: string) => void;
 }
 
-const typeIcons: Record<string, any> = {
+const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     video: Video,
     quiz: Target,
     lesson: BookOpen,

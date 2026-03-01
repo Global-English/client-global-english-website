@@ -8,8 +8,6 @@ import {
   Search,
   Sparkles,
   Users2,
-  Calendar,
-  X,
   AlertCircle,
   Plus,
 } from "lucide-react"
@@ -31,6 +29,7 @@ import {
   saveAdminCourse,
   type CourseStatus,
 } from "@/modules/courses"
+import Image from "next/image"
 import { uploadImage, deleteImage, getPublicIdFromUrl } from "@/lib/cloudinary-actions"
 import { toast } from "sonner"
 import { Loader2, Upload } from "lucide-react"
@@ -488,7 +487,7 @@ export default function Page() {
                   <div className="flex items-center gap-4">
                     {form.coverUrl && (
                       <div className="relative size-11 rounded-lg overflow-hidden border border-primary/10">
-                        <img src={form.coverUrl} alt="Capa" className="size-full object-cover" />
+                        <Image src={form.coverUrl} alt="Capa" fill className="object-cover" />
                       </div>
                     )}
                     <input
@@ -512,17 +511,6 @@ export default function Page() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="course-cover">URL da capa (opcional)</Label>
-                  <Input
-                    id="course-cover"
-                    placeholder="https://..."
-                    value={form.coverUrl}
-                    onChange={(event) =>
-                      setForm((prev) => ({ ...prev, coverUrl: event.target.value }))
-                    }
-                  />
-                </div>
 
                 <div className="rounded-xl border bg-muted/30 p-3 text-xs text-muted-foreground md:col-span-2">
                   Dica: prefira títulos curtos e objetivos. Isso melhora conversão na

@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Quote } from "lucide-react"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { LoginForm } from "@/components/login-form"
@@ -19,11 +20,11 @@ export default function LoginPage() {
           <div className="p-6 rounded-2xl bg-zinc-900/50 border border-zinc-800 backdrop-blur-md">
             <Quote className="size-8 text-primary/60 mb-4" />
             <p className="text-zinc-300 italic mb-4">
-              "A organização da plataforma mudou minha forma de estudar inglês. Tudo que eu preciso está centralizado e as trilhas são extremamente claras."
+              &quot;A organização da plataforma mudou minha forma de estudar inglês. Tudo que eu preciso está centralizado e as trilhas são extremamente claras.&quot;
             </p>
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-zinc-800 overflow-hidden border border-zinc-700">
-                <img src="https://i.pravatar.cc/100?img=33" alt="Avatar" className="w-full h-full object-cover" />
+                <Image src="https://i.pravatar.cc/100?img=33" alt="Avatar" width={40} height={40} className="w-full h-full object-cover" />
               </div>
               <div>
                 <div className="text-sm font-medium text-zinc-100">Marcos Pilgrim</div>

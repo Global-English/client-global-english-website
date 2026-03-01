@@ -25,6 +25,7 @@
 *.pem
 AGENTS.md
 .github/copilot-*.md
+.agents/
 
 # debug
 npm-debug.log*

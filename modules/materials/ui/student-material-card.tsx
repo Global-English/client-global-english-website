@@ -18,7 +18,7 @@ interface StudentMaterialCardProps {
     className?: string;
 }
 
-const typeIcons: Record<string, any> = {
+const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     video: Video,
     audio: FileAudio,
     link: LinkIcon,
