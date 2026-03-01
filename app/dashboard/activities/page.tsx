@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
 import { StudentActivityCard } from "@/modules/activities/ui/student-activity-card"
 import { useAuth } from "@/hooks/use-auth"
@@ -117,28 +117,28 @@ export default function Page() {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <DashboardStatCard
-            label="Atividades liberadas"
+            title="Atividades liberadas"
             value={activities.length}
             icon={ClipboardCheck}
           />
           <DashboardStatCard
-            label="Tempo estimado"
+            title="Tempo estimado"
             value={`${totalMinutes} min`}
             icon={Clock}
           />
           <DashboardStatCard
-            label="Tipos diferentes"
+            title="Tipos diferentes"
             value={Object.keys(typeCounts).length}
             icon={Target}
           />
           <DashboardStatCard
-            label="Em andamento"
+            title="Em andamento"
             value={activities.length}
             icon={ListChecks}
           />
         </div>
 
-        <AdminSectionHeader
+        <DashboardSectionHeader
           title="Minhas Atividades"
           description="Acompanhe pendências, entregas e feedbacks das aulas."
           icon={ClipboardCheck}

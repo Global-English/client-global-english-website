@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
 import { StudentCourseCard } from "@/modules/courses/ui/student-course-card"
 import { useAuth } from "@/hooks/use-auth"
@@ -101,21 +101,21 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <DashboardStatCard label="Cursos" value={stats.courses} icon={BookOpen} />
-          <DashboardStatCard label="Módulos" value={stats.tracks} icon={ClipboardList} />
+          <DashboardStatCard title="Cursos" value={stats.courses} icon={BookOpen} />
+          <DashboardStatCard title="Módulos" value={stats.tracks} icon={ClipboardList} />
           <DashboardStatCard
-            label="Atividades"
+            title="Atividades"
             value={stats.activities}
             icon={BarChart3}
           />
           <DashboardStatCard
-            label="Progresso médio"
+            title="Progresso médio"
             value={`${stats.avgProgress}%`}
             icon={Sparkles}
           />
         </div>
 
-        <AdminSectionHeader
+        <DashboardSectionHeader
           title="Meus Conteúdos"
           description="Acesse seus cursos e acompanhe sua evolução."
           icon={BookOpen}

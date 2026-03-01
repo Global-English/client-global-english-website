@@ -15,8 +15,8 @@ import {
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { AdminStatCard } from "@/components/admin/admin-stat-card"
-import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -265,28 +265,28 @@ export default function Page() {
 
         {/* Stats Grid */}
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <AdminStatCard
+          <DashboardStatCard
             title="Catálogo"
             value={courses.length}
             icon={Layers3}
             description="Cursos cadastrados"
             loading={loading}
           />
-          <AdminStatCard
+          <DashboardStatCard
             title="Alunos ativos"
             value={totalStudents}
             icon={Users2}
             description="Total em cursos"
             loading={loading}
           />
-          <AdminStatCard
+          <DashboardStatCard
             title="Estrutura"
             value={totalModules}
             icon={ClipboardList}
             description="Módulos publicados"
             loading={loading}
           />
-          <AdminStatCard
+          <DashboardStatCard
             title="Atividades"
             value={totalActivities}
             icon={BookOpenCheck}
@@ -297,7 +297,7 @@ export default function Page() {
 
         {/* List Section */}
         <div className="space-y-4">
-          <AdminSectionHeader
+          <DashboardSectionHeader
             title="Catálogo de cursos"
             description="Gerencie o que está visível para os alunos e acompanhe métricas de engajamento."
             icon={BookOpenCheck}
@@ -361,7 +361,7 @@ export default function Page() {
         {/* Form Section */}
         {showCreate && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <AdminSectionHeader
+            <DashboardSectionHeader
               title={isEditing ? "Editar curso" : "Novo treinamento"}
               description={isEditing ? "Modifique título, descrição ou status operacional do curso." : "Defina os parâmetros iniciais para o seu novo treinamento na Global English."}
               icon={isEditing ? Sparkles : Plus}

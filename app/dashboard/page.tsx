@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
 import { StudentCourseCard } from "@/modules/courses/ui/student-course-card"
 import { StudentActivityCard } from "@/modules/activities/ui/student-activity-card"
@@ -117,25 +117,25 @@ export default function Page() {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <DashboardStatCard
-            label="Cursos ativos"
+            title="Cursos ativos"
             value={stats.courses}
             icon={GraduationCap}
             description="Cursos em andamento"
           />
           <DashboardStatCard
-            label="Trilhas"
+            title="Trilhas"
             value={stats.tracks}
             icon={Layers}
             description="Módulos disponíveis"
           />
           <DashboardStatCard
-            label="Atividades"
+            title="Atividades"
             value={stats.activities}
             icon={ClipboardCheck}
             description="Total de atividades"
           />
           <DashboardStatCard
-            label="Progresso médio"
+            title="Progresso médio"
             value={`${stats.progress}%`}
             icon={ListChecks}
             description="Conclusão geral"
@@ -144,7 +144,7 @@ export default function Page() {
 
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-6">
-            <AdminSectionHeader
+            <DashboardSectionHeader
               title="Meus Cursos"
               description="Continue de onde parou para manter seu ritmo de aprendizado."
               icon={GraduationCap}
@@ -180,7 +180,7 @@ export default function Page() {
           </div>
 
           <div className="space-y-6">
-            <AdminSectionHeader
+            <DashboardSectionHeader
               title="Próximos Passos"
               description="Atividades recentes."
               icon={Sparkles}

@@ -1,7 +1,7 @@
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface AdminSectionHeaderProps {
+interface DashboardSectionHeaderProps {
     title: string
     description?: string
     icon?: LucideIcon
@@ -9,22 +9,22 @@ interface AdminSectionHeaderProps {
     action?: React.ReactNode
 }
 
-export function AdminSectionHeader({
+export function DashboardSectionHeader({
     title,
     description,
     icon: Icon,
     className,
     action,
-}: AdminSectionHeaderProps) {
+}: DashboardSectionHeaderProps) {
     return (
         <div className={cn("flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-1", className)}>
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
                     {Icon && <Icon className="size-5 text-primary" />}
-                    <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+                    <h2 className="text-lg font-black tracking-tight text-foreground">{title}</h2>
                 </div>
                 {description && (
-                    <p className="text-sm text-muted-foreground max-w-2xl">
+                    <p className="text-sm font-medium text-muted-foreground/60 max-w-2xl">
                         {description}
                     </p>
                 )}

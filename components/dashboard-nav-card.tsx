@@ -5,7 +5,7 @@ import { ArrowRight, type LucideIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
-interface AdminNavCardProps {
+interface DashboardNavCardProps {
     title: string
     description: string
     href: string
@@ -13,19 +13,19 @@ interface AdminNavCardProps {
     className?: string
 }
 
-export function AdminNavCard({
+export function DashboardNavCard({
     title,
     description,
     href,
     icon: Icon,
     className,
-}: AdminNavCardProps) {
+}: DashboardNavCardProps) {
     return (
         <Link href={href} className="block group">
             <Card className={cn(
-                "relative overflow-hidden transition-all duration-300",
-                "bg-card/50 backdrop-blur-sm border-primary/10 border-dashed",
-                "hover:bg-primary/3 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5",
+                "relative overflow-hidden transition-all duration-500",
+                "bg-card/40 backdrop-blur-md border-primary/10 border-dashed",
+                "hover:bg-primary/5 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1",
                 "active:scale-[0.98]",
                 className
             )}>
@@ -34,15 +34,15 @@ export function AdminNavCard({
                 </div>
 
                 <CardContent className="p-6 flex items-start gap-4">
-                    <div className="rounded-xl bg-primary/10 p-3 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <div className="rounded-2xl bg-primary/10 p-3 text-primary transition-all duration-500 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110">
                         <Icon className="size-6" />
                     </div>
 
                     <div className="flex-1 space-y-1 pr-6">
-                        <h3 className="font-semibold text-lg tracking-tight transition-colors group-hover:text-primary">
+                        <h3 className="font-black text-lg tracking-tight text-foreground transition-colors group-hover:text-primary">
                             {title}
                         </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="text-sm font-medium text-muted-foreground/60 leading-relaxed">
                             {description}
                         </p>
                     </div>

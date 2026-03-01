@@ -4,7 +4,7 @@ import * as React from "react"
 import { FileAudio, FileText, Link as LinkIcon, Video } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
 import { StudentMaterialCard } from "@/modules/materials/ui/student-material-card"
 import { useAuth } from "@/hooks/use-auth"
@@ -76,25 +76,25 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <DashboardStatCard label="Materiais" value={materials.length} icon={FileText} />
+          <DashboardStatCard title="Materiais" value={materials.length} icon={FileText} />
           <DashboardStatCard
-            label="Anexos"
+            title="Anexos"
             value={totalAttachments}
             icon={LinkIcon}
           />
           <DashboardStatCard
-            label="Textos"
+            title="Textos"
             value={markdownCount}
             icon={FileText}
           />
           <DashboardStatCard
-            label="Liberados"
+            title="Liberados"
             value={materials.length}
             icon={Video}
           />
         </div>
 
-        <AdminSectionHeader
+        <DashboardSectionHeader
           title="Biblioteca de Materiais"
           description="Acesse textos, anexos e links liberados pelos módulos."
           icon={FileText}

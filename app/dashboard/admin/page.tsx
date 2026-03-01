@@ -8,9 +8,9 @@ import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fetchAdminOverview } from "@/lib/firebase/firestore"
-import { AdminNavCard } from "@/components/admin/admin-nav-card"
-import { AdminStatCard } from "@/components/admin/admin-stat-card"
-import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardNavCard } from "@/components/dashboard-nav-card"
+import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import type { AdminOverview } from "@/lib/firebase/types"
 
 export default function Page() {
@@ -89,14 +89,14 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2">
-          <AdminStatCard
+          <DashboardStatCard
             title="Usuários ativos"
             value={overview?.usersCount ?? "-"}
             icon={Users2}
             description="Total cadastrado na plataforma"
             loading={loading}
           />
-          <AdminStatCard
+          <DashboardStatCard
             title="Cursos ativos"
             value={overview?.coursesCount ?? "-"}
             icon={GraduationCap}
@@ -106,19 +106,19 @@ export default function Page() {
         </div>
 
         <div className="space-y-4">
-          <AdminSectionHeader
-            title="Gestão do Sistema"
+          <DashboardSectionHeader
+            title="Gestão do System"
             icon={LayoutDashboard}
           />
 
           <div className="grid gap-4 md:grid-cols-2">
-            <AdminNavCard
+            <DashboardNavCard
               title="Gestão de Usuários"
               description="Gerencie contas de alunos, professores e administradores. Altere permissões e visualize perfis."
               href="/dashboard/admin/users"
               icon={Users2}
             />
-            <AdminNavCard
+            <DashboardNavCard
               title="Gestão de Cursos"
               description="Administre trilhas de aprendizado, módulos e materiais. Publique novos conteúdos ou edite existentes."
               href="/dashboard/admin/courses"

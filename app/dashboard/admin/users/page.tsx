@@ -4,8 +4,8 @@ import * as React from "react"
 import { Mail, UserCheck, Users2, UserPlus, Search, AlertCircle, X } from "lucide-react"
 
 import { DashboardHeader } from "@/components/dashboard-header"
-import { AdminStatCard } from "@/components/admin/admin-stat-card"
-import { AdminSectionHeader } from "@/components/admin/admin-section-header"
+import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -361,21 +361,21 @@ export default function Page() {
 
         {/* Stats Grid */}
         <div className="grid gap-4 md:grid-cols-3">
-          <AdminStatCard
+          <DashboardStatCard
             title="Usuários ativos"
             value={totalUsers}
             icon={Users2}
             description="Total na plataforma"
             loading={loading}
           />
-          <AdminStatCard
+          <DashboardStatCard
             title="Convites pendentes"
             value="-"
             icon={Mail}
             description="Aguardando ativação"
             loading={loading}
           />
-          <AdminStatCard
+          <DashboardStatCard
             title="Administradores"
             value={adminUsers}
             icon={UserPlus}
@@ -386,7 +386,7 @@ export default function Page() {
 
         {/* List Section */}
         <div className="space-y-4">
-          <AdminSectionHeader
+          <DashboardSectionHeader
             title="Base de usuários"
             description="Acompanhe convites e status de acesso dos integrantes da plataforma."
             icon={Users2}
@@ -465,7 +465,7 @@ export default function Page() {
         {/* Form Section */}
         {showForm && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <AdminSectionHeader
+            <DashboardSectionHeader
               title={selectedUser ? "Perfil do Usuário" : "Convite e Cadastro"}
               description={selectedUser ? "Ajuste permissões, atualize dados cadastrais ou congele o acesso." : "Cadastre novos integrantes na plataforma Global English."}
               icon={selectedUser ? UserCheck : UserPlus}
