@@ -19,6 +19,25 @@ export function getMetadataBase() {
   }
 }
 
+export function createOgImageUrl({
+  title,
+  description,
+  path = "/",
+}: {
+  title: string
+  description: string
+  path?: string
+}) {
+  const canonicalPath = path.startsWith("/") ? path : `/${path}`
+  const params = new URLSearchParams({
+    title,
+    description,
+    path: canonicalPath,
+  })
+
+  return `${getMetadataBase().origin}/api/og?${params.toString()}`
+}
+
 export function buildPageMetadata({
   title,
   description,
@@ -31,6 +50,7 @@ export function buildPageMetadata({
   noIndex?: boolean
 }): Metadata {
   const canonicalPath = path.startsWith("/") ? path : `/${path}`
+  const ogImageUrl = createOgImageUrl({ title, description, path: canonicalPath })
 
   return {
     title,
@@ -45,11 +65,20 @@ export function buildPageMetadata({
       title,
       description,
       url: canonicalPath,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${title} | ${siteConfig.name}`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImageUrl],
     },
     robots: noIndex
       ? {

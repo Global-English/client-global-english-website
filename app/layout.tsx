@@ -7,7 +7,7 @@ import "@uiw/react-markdown-preview/markdown.css"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AuthProvider } from "@/components/auth-provider"
 import { Toaster } from "sonner"
-import { getMetadataBase, siteConfig } from "@/lib/seo"
+import { createOgImageUrl, getMetadataBase, siteConfig } from "@/lib/seo"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,11 +44,30 @@ export const metadata: Metadata = {
     title: siteConfig.title,
     description: siteConfig.description,
     url: "/",
+    images: [
+      {
+        url: createOgImageUrl({
+          title: siteConfig.title,
+          description: siteConfig.description,
+          path: "/",
+        }),
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} - Preview`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
+    images: [
+      createOgImageUrl({
+        title: siteConfig.title,
+        description: siteConfig.description,
+        path: "/",
+      }),
+    ],
   },
 }
 
