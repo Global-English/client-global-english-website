@@ -13,6 +13,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url";
 import { cn } from "@/lib/utils";
 import type { AdminCourseSummary } from "@/lib/firebase/types";
 
@@ -46,7 +47,12 @@ export function AdminCourseCard({
                 {course.coverUrl && !imageError ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                        src={course.coverUrl}
+                        src={optimizeCloudinaryUrl(course.coverUrl, {
+                            width: 960,
+                            height: 540,
+                            crop: "fill",
+                            gravity: "auto",
+                        })}
                         alt={course.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={() => setImageError(true)}

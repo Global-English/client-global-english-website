@@ -30,6 +30,7 @@ import {
   type CourseStatus,
 } from "@/modules/courses"
 import Image from "next/image"
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url"
 import { uploadImage, deleteImage, getPublicIdFromUrl } from "@/lib/cloudinary-actions"
 import { toast } from "sonner"
 import { Loader2, Upload } from "lucide-react"
@@ -339,7 +340,7 @@ export default function Page() {
                   <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                   <Input
                     placeholder="Buscar cursos..."
-                    className="h-9 w-full pl-9 lg:w-[300px] bg-card/40 backdrop-blur-sm border-primary/20 transition-all focus:border-primary/30"
+                    className="h-9 w-full pl-9 lg:w-75 bg-card/40 backdrop-blur-sm border-primary/20 transition-all focus:border-primary/30"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -487,7 +488,17 @@ export default function Page() {
                   <div className="flex items-center gap-4">
                     {form.coverUrl && (
                       <div className="relative size-11 rounded-lg overflow-hidden border border-primary/20">
-                        <Image src={form.coverUrl} alt="Capa" fill className="object-cover" />
+                        <Image
+                          src={optimizeCloudinaryUrl(form.coverUrl, {
+                            width: 160,
+                            height: 160,
+                            crop: "fill",
+                            gravity: "auto",
+                          })}
+                          alt="Capa"
+                          fill
+                          className="object-cover"
+                        />
                       </div>
                     )}
                     <input

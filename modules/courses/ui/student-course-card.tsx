@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url";
 import { cn } from "@/lib/utils";
 import type { DashboardCourse } from "@/lib/firebase/types";
 
@@ -103,7 +104,12 @@ export function StudentCourseCard({
                 {course.coverUrl && !imageError ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                        src={course.coverUrl}
+                        src={optimizeCloudinaryUrl(course.coverUrl, {
+                            width: 960,
+                            height: 540,
+                            crop: "fill",
+                            gravity: "auto",
+                        })}
                         alt={course.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={() => setImageError(true)}

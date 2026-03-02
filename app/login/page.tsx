@@ -5,6 +5,7 @@ import { Quote } from "lucide-react"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { LoginForm } from "@/components/login-form"
 import { useRedirectIfAuthenticated } from "@/hooks/use-redirect-if-authenticated"
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url"
 
 export default function LoginPage() {
   const { isChecking } = useRedirectIfAuthenticated()
@@ -31,7 +32,18 @@ export default function LoginPage() {
             </p>
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-zinc-800 overflow-hidden border border-zinc-700">
-                <Image src="https://res.cloudinary.com/dflvo098t/image/upload/v1772409364/av3_wuknvs.jpg" alt="Avatar" width={40} height={40} className="w-full h-full object-cover" />
+                <Image
+                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/dflvo098t/image/upload/v1772409364/av3_wuknvs.jpg", {
+                    width: 80,
+                    height: 80,
+                    crop: "fill",
+                    gravity: "auto",
+                  })}
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <div className="text-sm font-medium text-zinc-100">Vivian Yamamoto</div>

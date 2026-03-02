@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Avatar as AvatarPrimitive } from "radix-ui"
 
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url"
 import { cn } from "@/lib/utils"
 
 function Avatar({
@@ -27,12 +28,24 @@ function Avatar({
 
 function AvatarImage({
   className,
+  src,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+  const optimizedSrc = React.useMemo(() => {
+    if (typeof src !== "string") return src
+    return optimizeCloudinaryUrl(src, {
+      width: 160,
+      height: 160,
+      crop: "fill",
+      gravity: "auto",
+    })
+  }, [src])
+
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn("aspect-square size-full", className)}
+      src={optimizedSrc}
       {...props}
     />
   )

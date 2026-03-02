@@ -1,6 +1,7 @@
 import React from "react"
 import Image from "next/image"
 import { Logo } from "@/components/ui/logo"
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url"
 import { cn } from "@/lib/utils"
 
 interface AuthLayoutProps {
@@ -26,6 +27,13 @@ export function AuthLayout({
     reverseLayout = false,
     primaryColorTheme = false,
 }: AuthLayoutProps) {
+    const optimizedImageSrc = optimizeCloudinaryUrl(imageSrc, {
+        width: 1920,
+        height: 1080,
+        crop: "fill",
+        gravity: "auto",
+    })
+
     return (
         <div className={cn("min-h-svh bg-background flex flex-col", reverseLayout ? "lg:flex-row-reverse" : "lg:flex-row")}>
             {/* Informational Pane */}
@@ -33,7 +41,7 @@ export function AuthLayout({
                 {/* Abstract Background for Premium Feel */}
                 <div className="absolute inset-0 z-0">
                     <Image
-                        src={imageSrc}
+                        src={optimizedImageSrc}
                         alt={imageAlt}
                         fill
                         className="object-cover opacity-60 mix-blend-luminosity blur-[5px] scale-105"
@@ -42,15 +50,15 @@ export function AuthLayout({
                     {primaryColorTheme ? (
                         <>
                             <div className="absolute inset-0 bg-linear-to-br from-black/60 to-transparent mix-blend-overlay"></div>
-                            <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-white/10 blur-[100px] translate-x-1/3 -translate-y-1/3"></div>
-                            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full bg-black/10 blur-[120px] -translate-x-1/2 translate-y-1/2"></div>
+                            <div className="absolute top-0 right-0 w-125 h-125 rounded-full bg-white/10 blur-[100px] translate-x-1/3 -translate-y-1/3"></div>
+                            <div className="absolute bottom-0 left-0 w-150 h-150 rounded-full bg-black/10 blur-[120px] -translate-x-1/2 translate-y-1/2"></div>
                             <div className="absolute inset-0 bg-primary/40 mix-blend-multiply"></div>
                         </>
                     ) : (
                         <>
                             <div className="absolute inset-0 bg-linear-to-br from-primary/80 to-accent/40 mix-blend-overlay"></div>
-                            <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-primary/20 blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
-                            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-accent/20 blur-[100px] -translate-x-1/2 translate-y-1/2"></div>
+                            <div className="absolute top-0 right-0 w-125 h-125 rounded-full bg-primary/20 blur-[120px] translate-x-1/2 -translate-y-1/2"></div>
+                            <div className="absolute bottom-0 left-0 w-100 h-100 rounded-full bg-accent/20 blur-[100px] -translate-x-1/2 translate-y-1/2"></div>
                             <div className="absolute inset-0 bg-zinc-950/40"></div>
                         </>
                     )}
@@ -93,7 +101,7 @@ export function AuthLayout({
                 {/* Subtle background glow for mobile */}
                 {!primaryColorTheme && <div className="absolute inset-0 lg:hidden -z-10 bg-linear-to-b from-primary/5 to-transparent"></div>}
 
-                <div className="w-full max-w-[420px] space-y-8 relative z-10">
+                <div className="w-full max-w-105 space-y-8 relative z-10">
                     <div className="flex items-center justify-center gap-3 text-sm font-bold tracking-tight lg:hidden">
                         <Logo className="size-10 text-primary" />
                         <span className="text-xl">Global English</span>

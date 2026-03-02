@@ -2,6 +2,7 @@ import Image from "next/image"
 import { Edit, Eye, Flame, ShieldCheck, Snowflake, Trash2, User } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url"
 import { cn } from "@/lib/utils"
 import type { AdminUserSummary } from "@/lib/firebase/types"
 
@@ -43,7 +44,17 @@ export function AdminUserCard({
                     )}
                 >
                     {item.photoURL ? (
-                        <Image src={item.photoURL} alt={item.name} fill className="object-cover" />
+                        <Image
+                            src={optimizeCloudinaryUrl(item.photoURL, {
+                                width: 80,
+                                height: 80,
+                                crop: "fill",
+                                gravity: "auto",
+                            })}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                        />
                     ) : isAdmin ? (
                         <ShieldCheck className="size-4" />
                     ) : (

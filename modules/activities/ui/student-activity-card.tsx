@@ -144,7 +144,7 @@ export function StudentActivityCard({
             </CardContent>
 
             {/* Decorative bottom glow */}
-            <div className="absolute -bottom-1 left-0 h-[2px] w-full bg-linear-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute -bottom-1 left-0 h-0.5 w-full bg-linear-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </Card>
     );
 }
