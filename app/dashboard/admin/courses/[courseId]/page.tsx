@@ -155,7 +155,7 @@ export default function Page() {
             </CardHeader>
 
             <CardContent className="space-y-6">
-              <p className="text-muted-foreground leading-relaxed text-sm sm:text-base max-w-xl">
+              <div className="text-muted-foreground leading-relaxed text-sm sm:text-base max-w-xl">
                 {course?.description ||
                   (loadingCourse ? (
                     <div className="space-y-2">
@@ -163,7 +163,7 @@ export default function Page() {
                       <div className="h-4 w-3/4 bg-muted/40 rounded animate-pulse" />
                     </div>
                   ) : "Este curso ainda não possui uma descrição estruturada.")}
-              </p>
+              </div>
 
               <div className="flex flex-wrap gap-3">
                 {[

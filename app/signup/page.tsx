@@ -1,11 +1,18 @@
+"use client"
+
 import Link from "next/link"
 import { Sparkles } from "lucide-react"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { SignupForm } from "@/components/signup-form"
+import { useRedirectIfAuthenticated } from "@/hooks/use-redirect-if-authenticated"
 
 const isSignupDisabled = process.env.NEXT_PUBLIC_SIGNUP_ENABLED === "false"
 
 export default function SignupPage() {
+  const { isChecking } = useRedirectIfAuthenticated()
+
+  if (isChecking) return null
+
   return (
     <AuthLayout
       reverseLayout

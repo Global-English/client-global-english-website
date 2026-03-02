@@ -1,9 +1,16 @@
+"use client"
+
 import Image from "next/image"
 import { Quote } from "lucide-react"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { LoginForm } from "@/components/login-form"
+import { useRedirectIfAuthenticated } from "@/hooks/use-redirect-if-authenticated"
 
 export default function LoginPage() {
+  const { isChecking } = useRedirectIfAuthenticated()
+
+  if (isChecking) return null
+
   return (
     <AuthLayout
       imageSrc="https://res.cloudinary.com/dflvo098t/image/upload/v1772349852/toronto-canada_glefp0.jpg"
@@ -24,10 +31,10 @@ export default function LoginPage() {
             </p>
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-full bg-zinc-800 overflow-hidden border border-zinc-700">
-                <Image src="https://i.pravatar.cc/100?img=33" alt="Avatar" width={40} height={40} className="w-full h-full object-cover" />
+                <Image src="https://res.cloudinary.com/dflvo098t/image/upload/v1772409364/av3_wuknvs.jpg" alt="Avatar" width={40} height={40} className="w-full h-full object-cover" />
               </div>
               <div>
-                <div className="text-sm font-medium text-zinc-100">Marcos Pilgrim</div>
+                <div className="text-sm font-medium text-zinc-100">Vivian Yamamoto</div>
                 <div className="text-xs text-zinc-500">Aluno Advanced</div>
               </div>
             </div>

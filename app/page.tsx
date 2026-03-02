@@ -98,19 +98,19 @@ export default function Home() {
               <div className="flex items-center gap-4 pt-6 border-t border-border/50">
                 <AvatarGroup>
                   <Avatar className="ring-background border-2 border-background">
-                    <AvatarImage src="https://i.pravatar.cc/100?img=8" />
+                    <AvatarImage src="https://res.cloudinary.com/dflvo098t/image/upload/v1772409384/av2_mtm7rr.jpg" />
                     <AvatarFallback>A1</AvatarFallback>
                   </Avatar>
                   <Avatar className="ring-background border-2 border-background">
-                    <AvatarImage src="https://i.pravatar.cc/100?img=5" />
+                    <AvatarImage src="https://res.cloudinary.com/dflvo098t/image/upload/v1772409366/av1_tysyxv.jpg" />
                     <AvatarFallback>A2</AvatarFallback>
                   </Avatar>
                   <Avatar className="ring-background border-2 border-background">
-                    <AvatarImage src="https://i.pravatar.cc/100?img=9" />
+                    <AvatarImage src="https://res.cloudinary.com/dflvo098t/image/upload/v1772409364/av4_qu7awa.jpg" />
                     <AvatarFallback>A3</AvatarFallback>
                   </Avatar>
                   <Avatar className="ring-background border-2 border-background">
-                    <AvatarImage src="https://i.pravatar.cc/100?img=4" />
+                    <AvatarImage src="https://res.cloudinary.com/dflvo098t/image/upload/v1772409364/av3_wuknvs.jpg" />
                     <AvatarFallback>A4</AvatarFallback>
                   </Avatar>
                 </AvatarGroup>
