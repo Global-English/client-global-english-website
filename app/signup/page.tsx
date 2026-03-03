@@ -1,12 +1,13 @@
-"use client"
+﻿"use client"
 
 import Link from "next/link"
-import { Sparkles } from "lucide-react"
+import { AlertCircle, Construction } from "lucide-react"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { SignupForm } from "@/components/signup-form"
 import { useRedirectIfAuthenticated } from "@/hooks/use-redirect-if-authenticated"
 
 const isSignupDisabled = process.env.NEXT_PUBLIC_SIGNUP_ENABLED === "false"
+const isSignupUnderConstruction = true
 
 export default function SignupPage() {
   const { isChecking } = useRedirectIfAuthenticated()
@@ -18,28 +19,42 @@ export default function SignupPage() {
       reverseLayout
       primaryColorTheme
       imageSrc="https://res.cloudinary.com/dflvo098t/image/upload/v1772349852/ghent-belgica_nkpima.jpg"
-      imageAlt="Ghent, Bélgica"
+      imageAlt="Ghent, Belgica"
       badgeText={
         <>
-          <Sparkles className="size-4" />
-          Convite Especial
+          <Construction className="size-4" />
+          Cadastro em construção
         </>
       }
-      title="Junte-se ao nosso ecossistema de aprendizado."
-      description="Sua conta dá acesso a um portal dedicado, onde as trilhas são customizadas e os objetivos são desenhados para a sua evolução no idioma."
+      title="Cadastro temporariamente indisponível."
+      description="Estamos finalizando melhorias no fluxo de criação de conta para garantir uma experiência mais confiável e segura."
       bottomContent={
         <div className="relative z-10 mt-auto pt-24 text-right">
-          <p className="text-sm font-medium text-white/80 mb-2">Já faz parte da plataforma?</p>
+          <p className="mb-2 text-sm font-medium text-white/80">Ja possui acesso?</p>
           <Link
             href="/login"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-white/10 px-6 font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:scale-105 active:scale-95 border border-white/20"
+            className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 font-semibold text-white backdrop-blur-sm transition-all hover:scale-105 hover:bg-white/20 active:scale-95"
           >
             Acessar Minha Conta
           </Link>
         </div>
       }
     >
-      <SignupForm isDisabled={isSignupDisabled} />
+      <div className="space-y-4">
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-300">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 size-5 shrink-0" />
+            <div className="space-y-1">
+              <p className="font-semibold">Cadastro em construção</p>
+              <p className="text-amber-700/90 dark:text-amber-200/90">
+                O fluxo de signup ainda não está liberado. Use uma conta existente para entrar no portal.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <SignupForm isDisabled={isSignupDisabled || isSignupUnderConstruction} />
+      </div>
     </AuthLayout>
   )
 }
