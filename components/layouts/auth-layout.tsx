@@ -28,10 +28,11 @@ export function AuthLayout({
     primaryColorTheme = false,
 }: AuthLayoutProps) {
     const optimizedImageSrc = optimizeCloudinaryUrl(imageSrc, {
-        width: 1920,
-        height: 1080,
+        width: 1280,
+        height: 1600,
         crop: "fill",
         gravity: "auto",
+        quality: 60,
     })
 
     return (
@@ -44,8 +45,8 @@ export function AuthLayout({
                         src={optimizedImageSrc}
                         alt={imageAlt}
                         fill
+                        sizes="45vw"
                         className="object-cover opacity-60 mix-blend-luminosity blur-[5px] scale-105"
-                        priority
                     />
                     {primaryColorTheme ? (
                         <>
