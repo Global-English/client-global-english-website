@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import { Badge } from "@/components/ui/badge"
 
 type DashboardHeaderProps = {
   title: string
@@ -90,10 +91,13 @@ export const DashboardHeader = React.memo(function DashboardHeader({
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <div className="ml-auto flex items-center gap-3 pr-4 text-sm text-muted-foreground">
-          <span className="hidden md:inline-block">
+        <div className="ml-auto flex items-center gap-2 pr-4 text-sm text-muted-foreground">
+          <Badge
+            variant="outline"
+            className="h-7 border-primary/20 bg-primary/5 px-2.5 text-[11px] font-semibold text-primary"
+          >
             {role === "admin" ? "Administrador" : "Aluno"}
-          </span>
+          </Badge>
           {action ? <div>{action}</div> : null}
         </div>
       </header>
