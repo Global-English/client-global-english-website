@@ -62,6 +62,8 @@ export default function Page() {
     { id: "materials", label: "Materiais", icon: FileText },
     { id: "activities", label: "Atividades", icon: ClipboardList },
   ] as const
+  const activeSectionMeta = sections.find((section) => section.id === activeSection) ?? sections[0]
+  const ActiveSectionIcon = activeSectionMeta.icon
 
   return (
     <CourseManagementProvider>
@@ -87,33 +89,99 @@ export default function Page() {
             </div>
           ) : null}
 
-          {/* Navigation Tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-2xl bg-primary/5 border border-dashed border-primary/20 w-fit backdrop-blur-md">
-            {sections.map((section) => {
-              const Icon = section.icon
-              const isActive = activeSection === section.id
-              return (
-                <button
-                  key={section.id}
-                  onClick={() => setActiveSection(section.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold tracking-tight transition-all ${isActive
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                    : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
-                    }`}
-                >
-                  <Icon className="size-3.5" />
-                  {section.label}
-                </button>
-              )
-            })}
+          {/* Mobile Section Selector */}
+          <div className="md:hidden space-y-2">
+            <label htmlFor="course-section-select" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/80">
+              Navegação do Curso
+            </label>
+            <div className="relative rounded-2xl border border-primary/20 bg-card/60 p-1 backdrop-blur-md">
+              <ActiveSectionIcon className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-primary" />
+              <select
+                id="course-section-select"
+                value={activeSection}
+                onChange={(event) => setActiveSection(event.target.value as SectionId)}
+                className="h-11 w-full appearance-none rounded-xl border border-primary/10 bg-background/70 py-2 pr-10 pl-10 text-sm font-semibold text-foreground outline-none transition-all focus:border-primary/30 focus:ring-2 focus:ring-primary/15"
+              >
+                {sections.map((section) => (
+                  <option key={section.id} value={section.id}>
+                    {section.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Desktop Navigation Tabs */}
+          <div
+            role="tablist"
+            aria-label="Seções de gestão do curso"
+            className="hidden md:block"
+          >
+            <div className="inline-flex min-w-max items-center gap-1 rounded-2xl border border-dashed border-primary/20 bg-primary/5 p-1 backdrop-blur-md">
+              {sections.map((section) => {
+                const Icon = section.icon
+                const isActive = activeSection === section.id
+                const tabId = `course-manage-tab-${section.id}`
+                const panelId = `course-manage-panel-${section.id}`
+
+                return (
+                  <button
+                    key={section.id}
+                    id={tabId}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={panelId}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`shrink-0 whitespace-nowrap rounded-xl px-4 py-2.5 text-xs font-bold tracking-tight transition-all ${isActive
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                      : "text-muted-foreground hover:bg-primary/5 hover:text-foreground"
+                      }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <Icon className="size-3.5" />
+                      {section.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           {/* Main Content Areas */}
-          <div className="transition-all duration-300 animate-in fade-in slide-in-from-bottom-2">
-            {activeSection === "overview" && <CourseOverview />}
-            {activeSection === "modules" && <TrackManagement />}
-            {activeSection === "materials" && <MaterialManagement />}
-            {activeSection === "activities" && <ActivityManagement />}
+          <div className="animate-in fade-in slide-in-from-bottom-2 transition-all duration-300">
+            <div
+              id="course-manage-panel-overview"
+              role="tabpanel"
+              aria-labelledby="course-manage-tab-overview"
+              hidden={activeSection !== "overview"}
+            >
+              {activeSection === "overview" && <CourseOverview />}
+            </div>
+            <div
+              id="course-manage-panel-modules"
+              role="tabpanel"
+              aria-labelledby="course-manage-tab-modules"
+              hidden={activeSection !== "modules"}
+            >
+              {activeSection === "modules" && <TrackManagement />}
+            </div>
+            <div
+              id="course-manage-panel-materials"
+              role="tabpanel"
+              aria-labelledby="course-manage-tab-materials"
+              hidden={activeSection !== "materials"}
+            >
+              {activeSection === "materials" && <MaterialManagement />}
+            </div>
+            <div
+              id="course-manage-panel-activities"
+              role="tabpanel"
+              aria-labelledby="course-manage-tab-activities"
+              hidden={activeSection !== "activities"}
+            >
+              {activeSection === "activities" && <ActivityManagement />}
+            </div>
           </div>
         </div>
       </div>
