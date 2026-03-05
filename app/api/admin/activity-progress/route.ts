@@ -67,29 +67,50 @@ export async function GET(req: NextRequest) {
       )
     )
 
-    const userDocs = await Promise.all(
-      userIds.map((uid) =>
-        adminDb.collection(COLLECTIONS.users).doc(uid).get()
-      )
+    const [userDocs, authUsersResult] = await Promise.all([
+      Promise.all(
+        userIds.map((uid) =>
+          adminDb.collection(COLLECTIONS.users).doc(uid).get()
+        )
+      ),
+      userIds.length > 0
+        ? adminAuth.getUsers(userIds.map((uid) => ({ uid })))
+        : Promise.resolve({ users: [] } as { users: Array<{ uid: string; displayName?: string | null; email?: string | null; photoURL?: string | null }> }),
+    ])
+
+    const authByUid = new Map(
+      authUsersResult.users.map((userRecord) => [userRecord.uid, userRecord] as const)
+    )
+
+    const firestoreByUid = new Map(
+      userDocs
+        .filter((docSnap) => docSnap.exists)
+        .map((docSnap) => [docSnap.id, docSnap.data() ?? {}] as const)
     )
 
     const userById = new Map(
-      userDocs
-        .filter((docSnap) => docSnap.exists)
-        .map((docSnap) => {
-          const data = docSnap.data() ?? {}
-          return [
-            docSnap.id,
-            {
-              uid: docSnap.id,
-              name: typeof data.name === "string" ? data.name : "",
-              email: typeof data.email === "string" ? data.email : "",
-              photoURL:
-                typeof data.photoURL === "string" ? data.photoURL : null,
-              isRobot: Boolean(data.isRobot),
-            },
-          ] as const
-        })
+      userIds.map((uid) => {
+        const firestoreUser = firestoreByUid.get(uid) ?? {}
+        const authUser = authByUid.get(uid)
+
+        const nameFromAuth = typeof authUser?.displayName === "string" ? authUser.displayName.trim() : ""
+        const nameFromFirestore = typeof firestoreUser.name === "string" ? firestoreUser.name.trim() : ""
+        const emailFromAuth = typeof authUser?.email === "string" ? authUser.email.trim() : ""
+        const emailFromFirestore = typeof firestoreUser.email === "string" ? firestoreUser.email.trim() : ""
+        const photoFromAuth = typeof authUser?.photoURL === "string" ? authUser.photoURL.trim() : ""
+        const photoFromFirestore = typeof firestoreUser.photoURL === "string" ? firestoreUser.photoURL.trim() : ""
+
+        return [
+          uid,
+          {
+            uid,
+            name: nameFromAuth || nameFromFirestore,
+            email: emailFromAuth || emailFromFirestore,
+            photoURL: photoFromAuth || photoFromFirestore || null,
+            isRobot: Boolean(firestoreUser.isRobot),
+          },
+        ] as const
+      })
     )
 
     const items: AdminActivityResponse[] = progressSnapshot.docs

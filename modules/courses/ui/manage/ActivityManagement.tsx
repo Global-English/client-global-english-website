@@ -30,6 +30,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
     Tooltip,
     TooltipContent,
@@ -1233,9 +1234,15 @@ export function ActivityManagement({ showCreatePanel }: ActivityManagementProps)
                                                                     <CollapsibleTrigger asChild>
                                                                         <Button variant="ghost" type="button" className="group flex h-auto w-full items-center justify-between px-1 py-1.5">
                                                                             <div className="flex min-w-0 items-center gap-2 text-left">
-                                                                                <div className="size-7 rounded-full border border-primary/20 bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
-                                                                                    {(response.user?.name || response.user?.email || "U").slice(0, 1).toUpperCase()}
-                                                                                </div>
+                                                                                <Avatar size="sm" className="size-7 border border-primary/20">
+                                                                                    <AvatarImage
+                                                                                        src={response.user?.photoURL || undefined}
+                                                                                        alt={response.user?.name || response.user?.email || "Usuário"}
+                                                                                    />
+                                                                                    <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
+                                                                                        {(response.user?.name || response.user?.email || "U").slice(0, 1).toUpperCase()}
+                                                                                    </AvatarFallback>
+                                                                                </Avatar>
                                                                                 <div className="min-w-0">
                                                                                     <p className="text-xs font-semibold truncate">{userLabel}</p>
                                                                                     <p className="text-[10px] text-muted-foreground">Atualizado em {formatDateTime(response.updatedAt)}</p>
