@@ -3,14 +3,12 @@
 import * as React from "react"
 import Link from "next/link"
 import {
-  ArrowRight,
   BookOpen,
   CheckCircle2,
   ClipboardList,
+  Layers,
   PauseCircle,
   Play,
-  Target,
-  Timer,
 } from "lucide-react"
 
 import { Card, CardContent } from "@/components/ui/card"
@@ -53,17 +51,14 @@ function getStatusConfig(status: string) {
   return statusConfigByKey[status] ?? statusConfigByKey.active
 }
 
-function getNextActionLabel(status: string, progress: number) {
-  if (status === "completed" || progress >= 100) {
-    return "Revisar conteudo"
+function getActionLabel(status: string) {
+  if (status === "completed") {
+    return "Revisar atividades"
   }
   if (status === "paused") {
-    return "Retomar agora"
+    return "Retomar estudos"
   }
-  if (progress <= 0) {
-    return "Iniciar jornada"
-  }
-  return "Continuar curso"
+  return "Abrir atividades"
 }
 
 export function StudentCourseCard({
@@ -72,15 +67,11 @@ export function StudentCourseCard({
   className,
 }: StudentCourseCardProps) {
   const [imageError, setImageError] = React.useState(false)
-  const progress = Math.min(100, Math.max(0, Number(course.enrollment.progress ?? 0)))
   const totalActivities = course.activities.length
-  const completedActivities = totalActivities
-    ? Math.min(totalActivities, Math.round((totalActivities * progress) / 100))
-    : 0
-  const remainingActivities = Math.max(totalActivities - completedActivities, 0)
+  const totalModules = course.tracks.length
   const statusConfig = getStatusConfig(course.enrollment.status)
   const StatusIcon = statusConfig.icon
-  const nextActionLabel = getNextActionLabel(course.enrollment.status, progress)
+  const actionLabel = getActionLabel(course.enrollment.status)
 
   if (variant === "horizontal") {
     return (
@@ -112,34 +103,29 @@ export function StudentCourseCard({
                 {course.title}
               </h3>
               <p className="line-clamp-1 text-xs text-muted-foreground/75">
-                {course.description || "Evolua com um plano de estudo estruturado."}
+                {course.description || "Conteúdo disponível para seu desenvolvimento contínuo."}
               </p>
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                Progresso
-              </p>
-              <p className="text-lg font-black tracking-tight text-primary">{progress}%</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">Status</p>
+              <p className="text-sm font-bold tracking-tight text-primary">{statusConfig.label}</p>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="h-2 overflow-hidden rounded-full bg-primary/10">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-700"
-                style={{ width: `${progress}%` }}
-              />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-lg border border-primary/10 bg-primary/5 p-2 text-center">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Módulos</p>
+              <p className="text-sm font-bold text-foreground">{totalModules}</p>
             </div>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground/80">
-              <span>{completedActivities}/{totalActivities} atividades concluidas</span>
-              <span>{remainingActivities} restantes</span>
+            <div className="rounded-lg border border-primary/10 bg-primary/5 p-2 text-center">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Atividades</p>
+              <p className="text-sm font-bold text-foreground">{totalActivities}</p>
             </div>
           </div>
 
           <Button size="sm" className="w-full rounded-full font-semibold" asChild>
-            <Link href={`/dashboard/courses/${course.id}`}>
-              {nextActionLabel}
-              <ArrowRight className="ml-2 size-4" />
+            <Link href="/dashboard/activities">
+              {actionLabel}
             </Link>
           </Button>
         </CardContent>
@@ -194,14 +180,10 @@ export function StudentCourseCard({
 
         <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
           <div className="min-w-0">
+            <p className="line-clamp-1 text-sm font-bold text-white">{course.title}</p>
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
-              Proxima acao
+              {totalModules} módulo(s) • {totalActivities} atividade(s)
             </p>
-            <p className="line-clamp-1 text-sm font-bold text-white">{nextActionLabel}</p>
-          </div>
-          <div className="shrink-0 rounded-xl border border-white/20 bg-black/40 px-2.5 py-1.5 text-right backdrop-blur-md">
-            <p className="text-[9px] font-semibold uppercase tracking-widest text-white/70">Progresso</p>
-            <p className="text-base font-black leading-tight text-white">{progress}%</p>
           </div>
         </div>
       </div>
@@ -212,51 +194,45 @@ export function StudentCourseCard({
             {course.title}
           </h3>
           <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground/80">
-            {course.description || "Curso com trilha orientada para aplicacao pratica e evolucao consistente."}
+            {course.description || "Curso com conteúdos organizados para aplicação prática."}
           </p>
         </div>
 
         <div className="rounded-2xl border border-primary/10 bg-primary/5 p-4">
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/70">
-              Avanco da trilha
+              Resumo do curso
             </p>
-            <p className="text-sm font-extrabold text-primary">{progress}%</p>
+            <p className="text-sm font-extrabold text-primary">{statusConfig.label}</p>
           </div>
-          <div className="h-2.5 overflow-hidden rounded-full bg-primary/10">
-            <div
-              className="h-full rounded-full bg-primary transition-all duration-700"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground/80">
-            <span>{completedActivities}/{totalActivities} concluidas</span>
-            <span>{remainingActivities} restantes</span>
+          <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground/80">
+            <div className="rounded-lg border border-primary/10 bg-background/70 p-2 text-center">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Módulos</p>
+              <p className="text-sm font-bold text-foreground">{totalModules}</p>
+            </div>
+            <div className="rounded-lg border border-primary/10 bg-background/70 p-2 text-center">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Atividades</p>
+              <p className="text-sm font-bold text-foreground">{totalActivities}</p>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-xl border border-primary/10 bg-background/70 p-2.5 text-center">
+            <Layers className="mx-auto mb-1 size-3.5 text-primary/80" />
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Nível</p>
+            <p className="text-sm font-bold text-foreground">{course.level}</p>
+          </div>
           <div className="rounded-xl border border-primary/10 bg-background/70 p-2.5 text-center">
             <ClipboardList className="mx-auto mb-1 size-3.5 text-primary/80" />
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Modulos</p>
-            <p className="text-sm font-bold text-foreground">{course.tracks.length}</p>
-          </div>
-          <div className="rounded-xl border border-primary/10 bg-background/70 p-2.5 text-center">
-            <Target className="mx-auto mb-1 size-3.5 text-primary/80" />
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Atividades</p>
-            <p className="text-sm font-bold text-foreground">{totalActivities}</p>
-          </div>
-          <div className="rounded-xl border border-primary/10 bg-background/70 p-2.5 text-center">
-            <Timer className="mx-auto mb-1 size-3.5 text-primary/80" />
             <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/70">Duracao</p>
             <p className="text-sm font-bold text-foreground">{course.durationWeeks} sem</p>
           </div>
         </div>
 
         <Button className="mt-auto w-full rounded-full font-semibold shadow-lg shadow-primary/20" asChild>
-          <Link href={`/dashboard/courses/${course.id}`}>
-            {nextActionLabel}
-            <ArrowRight className="ml-2 size-4" />
+          <Link href="/dashboard/activities">
+            {actionLabel}
           </Link>
         </Button>
       </CardContent>
