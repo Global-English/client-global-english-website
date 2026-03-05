@@ -13,6 +13,7 @@ import {
 import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { MotionItem } from "@/components/ui/micro-motion"
 import { Button } from "@/components/ui/button"
 import { StudentActivityCard } from "@/modules/activities/ui/student-activity-card"
 import { useAuth } from "@/hooks/use-auth"
@@ -136,7 +137,7 @@ export default function Page() {
   )
 
   return (
-    <div>
+    <div className="ge-page-enter">
       <DashboardHeader
         title="Atividades"
         description="Acompanhe pendências, entregas e feedbacks das aulas."
@@ -156,35 +157,46 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <DashboardStatCard
-            title="Atividades liberadas"
-            value={activities.length}
-            icon={ClipboardCheck}
-          />
-          <DashboardStatCard
-            title="Tempo estimado"
-            value={`${totalMinutes} min`}
-            icon={Clock}
-          />
-          <DashboardStatCard
-            title="Tipos diferentes"
-            value={Object.keys(typeCounts).length}
-            icon={Target}
-          />
-          <DashboardStatCard
-            title="Concluídas"
-            value={completedCount}
-            icon={ListChecks}
-          />
+          <MotionItem delay={40}>
+            <DashboardStatCard
+              title="Atividades liberadas"
+              value={activities.length}
+              icon={ClipboardCheck}
+            />
+          </MotionItem>
+          <MotionItem delay={80}>
+            <DashboardStatCard
+              title="Tempo estimado"
+              value={`${totalMinutes} min`}
+              icon={Clock}
+            />
+          </MotionItem>
+          <MotionItem delay={120}>
+            <DashboardStatCard
+              title="Tipos diferentes"
+              value={Object.keys(typeCounts).length}
+              icon={Target}
+            />
+          </MotionItem>
+          <MotionItem delay={160}>
+            <DashboardStatCard
+              title="Concluídas"
+              value={completedCount}
+              icon={ListChecks}
+            />
+          </MotionItem>
         </div>
 
-        <DashboardSectionHeader
-          title="Minhas Atividades"
-          description={`Acompanhe pendências, entregas e feedbacks das aulas. ${inProgressCount} em andamento.`}
-          icon={ClipboardCheck}
-        />
+        <MotionItem delay={170}>
+          <DashboardSectionHeader
+            title="Minhas Atividades"
+            description={`Acompanhe pendências, entregas e feedbacks das aulas. ${inProgressCount} em andamento.`}
+            icon={ClipboardCheck}
+          />
+        </MotionItem>
 
-        <div
+        <MotionItem
+          delay={180}
           role="tablist"
           aria-label="Filtrar atividades por status"
           className="inline-flex w-fit items-center rounded-xl border border-dashed border-primary/15 bg-primary/5 p-1"
@@ -219,7 +231,7 @@ export default function Page() {
           >
             Concluídas ({completedCount})
           </Button>
-        </div>
+        </MotionItem>
 
         {loading ? (
           <div className="flex h-64 items-center justify-center text-muted-foreground animate-pulse">
@@ -255,14 +267,15 @@ export default function Page() {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredActivities.map((activity) => (
-              <StudentActivityCard
-                key={activity.id}
-                activity={{
-                  ...activity,
-                }}
-                onOpen={(id) => router.push(`/dashboard/activities/${id}`)}
-              />
+            {filteredActivities.map((activity, index) => (
+              <MotionItem key={activity.id} delay={220 + index * 45} lift>
+                <StudentActivityCard
+                  activity={{
+                    ...activity,
+                  }}
+                  onOpen={(id) => router.push(`/dashboard/activities/${id}`)}
+                />
+              </MotionItem>
             ))}
           </div>
         )}

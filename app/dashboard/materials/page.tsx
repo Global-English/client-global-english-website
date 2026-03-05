@@ -6,6 +6,7 @@ import { FileText, Link as LinkIcon, Video } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { MotionItem } from "@/components/ui/micro-motion"
 import { StudentMaterialCard } from "@/modules/materials/ui/student-material-card"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchUserMaterials } from "@/lib/firebase/firestore"
@@ -61,7 +62,7 @@ export default function Page() {
   )
 
   return (
-    <div>
+    <div className="ge-page-enter">
       <DashboardHeader
         title="Materiais"
         description="Acesse textos, anexos e links liberados pelos módulos."
@@ -81,22 +82,30 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <DashboardStatCard title="Materiais" value={materials.length} icon={FileText} />
-          <DashboardStatCard
-            title="Anexos"
-            value={totalAttachments}
-            icon={LinkIcon}
-          />
-          <DashboardStatCard
-            title="Textos"
-            value={markdownCount}
-            icon={FileText}
-          />
-          <DashboardStatCard
-            title="Liberados"
-            value={materials.length}
-            icon={Video}
-          />
+          <MotionItem delay={40}>
+            <DashboardStatCard title="Materiais" value={materials.length} icon={FileText} />
+          </MotionItem>
+          <MotionItem delay={80}>
+            <DashboardStatCard
+              title="Anexos"
+              value={totalAttachments}
+              icon={LinkIcon}
+            />
+          </MotionItem>
+          <MotionItem delay={120}>
+            <DashboardStatCard
+              title="Textos"
+              value={markdownCount}
+              icon={FileText}
+            />
+          </MotionItem>
+          <MotionItem delay={160}>
+            <DashboardStatCard
+              title="Liberados"
+              value={materials.length}
+              icon={Video}
+            />
+          </MotionItem>
         </div>
 
         <DashboardSectionHeader
@@ -125,8 +134,10 @@ export default function Page() {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {materials.map((material) => (
-              <StudentMaterialCard key={material.id} material={material} />
+            {materials.map((material, index) => (
+              <MotionItem key={material.id} delay={200 + index * 45} lift>
+                <StudentMaterialCard material={material} />
+              </MotionItem>
             ))}
           </div>
         )}

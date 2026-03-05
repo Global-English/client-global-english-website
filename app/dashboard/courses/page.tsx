@@ -11,6 +11,7 @@ import {
 import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { MotionItem } from "@/components/ui/micro-motion"
 import { StudentCourseCard } from "@/modules/courses/ui/student-course-card"
 import { useAuth } from "@/hooks/use-auth"
 
@@ -79,7 +80,7 @@ export default function Page() {
   )
 
   return (
-    <div>
+    <div className="ge-page-enter">
       <DashboardHeader
         title="Cursos"
         description="Gerencie seus cursos ativos e descubra novas trilhas."
@@ -99,18 +100,26 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <DashboardStatCard title="Cursos" value={stats.courses} icon={BookOpen} />
-          <DashboardStatCard title="Módulos" value={stats.tracks} icon={ClipboardList} />
-          <DashboardStatCard
-            title="Atividades"
-            value={stats.activities}
-            icon={BarChart3}
-          />
-          <DashboardStatCard
-            title="Progresso médio"
-            value={`${stats.avgProgress}%`}
-            icon={Sparkles}
-          />
+          <MotionItem delay={40}>
+            <DashboardStatCard title="Cursos" value={stats.courses} icon={BookOpen} />
+          </MotionItem>
+          <MotionItem delay={80}>
+            <DashboardStatCard title="Módulos" value={stats.tracks} icon={ClipboardList} />
+          </MotionItem>
+          <MotionItem delay={120}>
+            <DashboardStatCard
+              title="Atividades"
+              value={stats.activities}
+              icon={BarChart3}
+            />
+          </MotionItem>
+          <MotionItem delay={160}>
+            <DashboardStatCard
+              title="Progresso médio"
+              value={`${stats.avgProgress}%`}
+              icon={Sparkles}
+            />
+          </MotionItem>
         </div>
 
         <DashboardSectionHeader
@@ -139,8 +148,10 @@ export default function Page() {
               </div>
             </div>
           ) : (
-            courses.map((course) => (
-              <StudentCourseCard key={course.id} course={course} />
+            courses.map((course, index) => (
+              <MotionItem key={course.id} delay={120 + index * 45} lift>
+                <StudentCourseCard course={course} />
+              </MotionItem>
             ))
           )}
         </div>

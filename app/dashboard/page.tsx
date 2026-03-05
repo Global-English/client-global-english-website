@@ -13,6 +13,7 @@ import {
 import { DashboardHeader } from "@/components/dashboard-header"
 import { DashboardSectionHeader } from "@/components/dashboard-section-header"
 import { DashboardStatCard } from "@/components/dashboard-stat-card"
+import { MotionItem } from "@/components/ui/micro-motion"
 import { StudentCourseCard } from "@/modules/courses/ui/student-course-card"
 import { StudentActivityCard } from "@/modules/activities/ui/student-activity-card"
 import { useAuth } from "@/hooks/use-auth"
@@ -117,7 +118,7 @@ export default function Page() {
   )
 
   return (
-    <div>
+    <div className="ge-page-enter">
       <DashboardHeader
         title="Painel do aluno"
         description="Acompanhe seus cursos, trilhas e atividades atuais."
@@ -137,30 +138,38 @@ export default function Page() {
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <DashboardStatCard
-            title="Cursos ativos"
-            value={stats.courses}
-            icon={GraduationCap}
-            description="Cursos em andamento"
-          />
-          <DashboardStatCard
-            title="Trilhas"
-            value={stats.tracks}
-            icon={Layers}
-            description="Módulos disponíveis"
-          />
-          <DashboardStatCard
-            title="Atividades"
-            value={stats.activities}
-            icon={ClipboardCheck}
-            description="Total de atividades"
-          />
-          <DashboardStatCard
-            title="Progresso médio"
-            value={`${stats.progress}%`}
-            icon={ListChecks}
-            description="Conclusão geral"
-          />
+          <MotionItem delay={40}>
+            <DashboardStatCard
+              title="Cursos ativos"
+              value={stats.courses}
+              icon={GraduationCap}
+              description="Cursos em andamento"
+            />
+          </MotionItem>
+          <MotionItem delay={80}>
+            <DashboardStatCard
+              title="Trilhas"
+              value={stats.tracks}
+              icon={Layers}
+              description="Módulos disponíveis"
+            />
+          </MotionItem>
+          <MotionItem delay={120}>
+            <DashboardStatCard
+              title="Atividades"
+              value={stats.activities}
+              icon={ClipboardCheck}
+              description="Total de atividades"
+            />
+          </MotionItem>
+          <MotionItem delay={160}>
+            <DashboardStatCard
+              title="Progresso médio"
+              value={`${stats.progress}%`}
+              icon={ListChecks}
+              description="Conclusão geral"
+            />
+          </MotionItem>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
@@ -178,8 +187,10 @@ export default function Page() {
                 </div>
               ) : courses.length ? (
                 <div className="grid gap-6 sm:grid-cols-2">
-                  {courses.map((course) => (
-                    <StudentCourseCard key={course.id} course={course} />
+                  {courses.map((course, index) => (
+                    <MotionItem key={course.id} delay={120 + index * 45} lift>
+                      <StudentCourseCard course={course} />
+                    </MotionItem>
                   ))}
                 </div>
               ) : (
@@ -209,16 +220,17 @@ export default function Page() {
 
             <div className="space-y-4">
               {upcomingActivities.length ? (
-                upcomingActivities.map((activity) => (
-                  <StudentActivityCard
-                    key={activity.id}
-                    activity={{
-                      ...activity,
-                      status: activity.status,
-                    }}
-                    variant="compact"
-                    onOpen={(id) => router.push(`/dashboard/activities/${id}`)}
-                  />
+                upcomingActivities.map((activity, index) => (
+                  <MotionItem key={activity.id} delay={180 + index * 45}>
+                    <StudentActivityCard
+                      activity={{
+                        ...activity,
+                        status: activity.status,
+                      }}
+                      variant="compact"
+                      onOpen={(id) => router.push(`/dashboard/activities/${id}`)}
+                    />
+                  </MotionItem>
                 ))
               ) : (
                 <div className="space-y-2.5 rounded-2xl border border-primary/5 bg-primary/5 p-4 group-hover:bg-primary/10 transition-colors">
@@ -230,20 +242,22 @@ export default function Page() {
             </div>
 
             {courses.length > 0 && (
-              <Card className="overflow-hidden border-primary/20 bg-primary/5 backdrop-blur-sm gap-2">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-bold uppercase tracking-widest text-primary/60 flex items-center gap-2">
-                    <Sparkles className="size-4" />
-                    Insight de hoje
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs font-medium leading-relaxed text-muted-foreground">
-                    Alunos que mantêm uma rotina de 15 minutos diários têm 3x mais chances de atingir a fluência em 1 ano.
-                    <span className="block mt-2 font-bold text-primary/80">Keep going! 🚀</span>
-                  </p>
-                </CardContent>
-              </Card>
+              <MotionItem delay={240}>
+                <Card className="overflow-hidden border-primary/20 bg-primary/5 backdrop-blur-sm gap-2">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-bold uppercase tracking-widest text-primary/60 flex items-center gap-2">
+                      <Sparkles className="size-4" />
+                      Insight de hoje
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
+                      Alunos que mantêm uma rotina de 15 minutos diários têm 3x mais chances de atingir a fluência em 1 ano.
+                      <span className="block mt-2 font-bold text-primary/80">Keep going! 🚀</span>
+                    </p>
+                  </CardContent>
+                </Card>
+              </MotionItem>
             )}
           </div>
         </div>
